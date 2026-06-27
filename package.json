@@ -2,6 +2,7 @@
   "name": "pokemon-galaxy",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.30.3",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -49,7 +50,7 @@
     "@types/react-dom": "19.0.4",
     "@vitejs/plugin-react": "^4.7.0",
     "eslint": "^9.21.0",
-    "eslint-config-next": "15.1.7",
+    "eslint-config-next": "15.1.8",
     "jsdom": "^29.1.1",
     "postcss": "^8.5.3",
     "prettier": "^3.5.2",
