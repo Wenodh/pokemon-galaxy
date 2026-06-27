@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Pokemon Galaxy</string>
+    <string name="title_activity_main">Pokemon Galaxy</string>
+    <string name="package_name">com.pokemongalaxy.app</string>
+    <string name="custom_url_scheme">com.pokemongalaxy.app</string>
+</resources>
