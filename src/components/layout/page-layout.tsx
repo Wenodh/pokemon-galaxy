@@ -1,16 +1,11 @@
-import { Header } from "./header";
-import { Footer } from "./footer";
-
 interface PageLayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * PageLayout provides a consistent wrapper for page content.
+ * Header and Footer are managed by the RootLayout to avoid duplication.
+ */
 export function PageLayout({ children }: PageLayoutProps) {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </div>
-  );
+  return <>{children}</>;
 }

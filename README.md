@@ -1,99 +1,43 @@
-# Pokémon Galaxy
+# Pokémon Galaxy v0.2.0
 
 A premium, high-performance Pokémon discovery platform built with Next.js 15, React 19, and Tailwind CSS v4.
 
 ## 🌌 Overview
 
-Pokémon Galaxy is designed as a production-grade foundation for a comprehensive Pokémon ecosystem. It prioritizes developer experience, scalability, and modern UI/UX principles inspired by industry leaders like Linear and Vercel.
+Pokémon Galaxy is a production-grade application for exploring the Pokémon universe. It leverages a modern tech stack and clean architecture to provide a lightning-fast, accessible, and beautiful user experience.
 
-### Phase 0 & 1A Complete:
-- **Foundation:** Next.js 15 (App Router), React 19, Tailwind v4, TypeScript.
-- **State & Data:** Zustand (persisted), TanStack Query, GraphQL.
-- **Discovery Experience:** Landing Page with featured Pokémon and a fully functional, infinite-scroll Pokédex with URL-synced search.
-- **Infrastructure:** Repository pattern for API decoupling, comprehensive testing suite (Vitest + Playwright), and CI/CD ready.
+- **Explore**: Browse 1,000+ Pokémon in the [Pokédex](/pokedex).
+- **Personalize**: Choose between Comfortable and Compact views.
+- **Experience**: Dark-mode first, mobile-optimized design.
 
-## 🛠 Tech Stack
+## 🛠 Quick Start
 
-- **Framework:** Next.js 15.1.8 (App Router)
-- **Library:** React 19
-- **Styling:** Tailwind CSS v4, shadcn/ui (customized), Framer Motion
-- **Data Fetching:** TanStack Query v5, GraphQL Request
-- **State Management:** Zustand (Persisted)
-- **Forms & Validation:** React Hook Form, Zod
-- **Testing:** Vitest, Playwright
-- **Linting & Formatting:** ESLint, Prettier
-
-## 🏗 Architecture
-
-The project follows a hybrid architecture designed for scalability:
-
-```
-src/
-├── app/              # Next.js App Router (Pages & Layouts)
-├── components/       # Shared UI library & Global layouts
-├── features/         # Feature-based organization (Pokedex, etc.)
-│   └── pokedex/
-│       ├── api/      # GraphQL queries
-│       ├── components/
-│       ├── hooks/    # Feature-specific hooks
-│       ├── services/ # Repositories & Business logic
-│       └── types/
-├── hooks/            # Global reusable hooks
-├── lib/              # Core configurations (API, utils)
-└── store/            # Global state (Theme, UI)
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+
-- pnpm (Recommended)
-
-### Installation
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
-3. Set up environment variables:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-### Development
-
-Run the development server:
 ```bash
+# Install dependencies
+pnpm install
+
+# Run development server
 pnpm dev
+
+# Build for production
+pnpm build
 ```
-The application will be available at `http://localhost:3000`.
 
-### Testing
+## 📚 Documentation
 
-- **Unit Tests:** `pnpm test`
-- **E2E Tests:** `pnpm exec playwright test`
+Detailed engineering documentation is available in the `/docs` directory:
 
-## 📡 API Layer
+- [🏗 Architecture](./docs/ARCHITECTURE.md) - System design and folder structure.
+- [🔄 Data Flow](./docs/DATA_FLOW.md) - How data moves through the app.
+- [🛡 Accessibility](./docs/ACCESSIBILITY.md) - WCAG AA compliance status.
+- [📊 Performance](./docs/PERFORMANCE.md) - Build stats and optimizations.
+- [📋 Technical Debt](./docs/TECHNICAL_DEBT.md) - Current known issues and future fixes.
+- [🛣 Roadmap](./docs/ROADMAP.md) - Current status and future phases.
+- [💡 Decisions](./docs/DECISIONS.md) - Architectural Decision Records (ADR).
 
-The project utilizes the **PokeAPI GraphQL (v1beta2)** endpoint.
-- Data fetching is abstracted through the `PokedexRepository` in `src/features/pokedex/services/`.
-- Types are strictly defined to ensure data integrity across the application.
+## 🚀 Release Notes
 
-## 🎨 Theme & Accessibility
-
-- **Dark Mode First:** Optimized for a premium dark aesthetic with full light mode support.
-- **A11y:** Follows WCAG AA guidelines with proper ARIA labels and keyboard navigation.
-- **Performance:** Leverages React Server Components (RSC) by default with minimal client-side hydration.
-
-## 🗺 Roadmap
-
-- [x] Phase 0: Foundation & Core UI
-- [x] Phase 1A: Discovery Experience (Landing + Pokedex)
-- [ ] Phase 1B: Detailed Insights (Pokemon Details, Evolution Chains)
-- [ ] Phase 2: Personalization (Team Builder, Favorites)
-- [ ] Phase 3: Engagement (Battle Analyzer, Quiz)
-- [ ] Phase 4: Innovation (3D Galaxy Explorer)
+Check out the latest features in [v0.2.0 Release Notes](./docs/RELEASE_NOTES_v0.2.0.md).
 
 ---
 Built with precision. Pokemon Galaxy © 2026.

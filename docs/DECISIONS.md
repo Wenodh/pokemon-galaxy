@@ -1,0 +1,31 @@
+# Engineering Decisions (ADR) - Pokémon Galaxy
+
+## ADR 001: GraphQL vs. REST
+**Context**: We need to fetch Pokémon data efficiently with nested relationships (types, stats).
+**Decision**: Use **GraphQL** (v1beta2 endpoint).
+**Rationale**: Allows fetching only the required fields in a single request, reducing over-fetching and simplifying client-side data mapping compared to REST.
+
+## ADR 002: Tailwind CSS v4
+**Context**: Modern styling engine for a production-grade app.
+**Decision**: Use **Tailwind v4**.
+**Rationale**: Performance improvements, native CSS variables, and simplified configuration. It aligns with our "modern tech stack" requirement.
+
+## ADR 003: Zustand for Client State
+**Context**: Need to persist user preferences (theme, density).
+**Decision**: Use **Zustand** with `persist` middleware.
+**Rationale**: Lower boilerplate than Redux, easier to understand for a "Galaxy" scale app, and native support for middleware like persistence.
+
+## ADR 004: Repository Pattern in `src/features`
+**Context**: Separation of concerns between UI and Data fetching.
+**Decision**: Abstract GraphQL calls into **Repository Services**.
+**Rationale**: Makes the code testable with Vitest by allowing us to mock repositories. It also prepares the app for potential future API migrations without touching the UI layer.
+
+## ADR 005: URL-Synced Search State
+**Context**: Users expect to share search results via links.
+**Decision**: Sync search queries to **URL Search Params**.
+**Rationale**: Provides a better user experience (back button works, shareable links) and ensures the search state persists through refreshes.
+
+## ADR 006: Persistence of User Preferences
+**Context**: Users should not have to re-select "Compact Mode" on every visit.
+**Decision**: Persist preference store to `localStorage`.
+**Rationale**: Improves retention and UX. We use a `mounted` check to avoid hydration mismatches.

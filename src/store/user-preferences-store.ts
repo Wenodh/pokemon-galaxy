@@ -1,24 +1,22 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-interface UserPreferences {
+export type CardDensity = "comfortable" | "compact";
+
+interface UserPreferencesState {
   reducedMotion: boolean;
-  highContrast: boolean;
-  language: string;
+  cardDensity: CardDensity;
   setReducedMotion: (enabled: boolean) => void;
-  setHighContrast: (enabled: boolean) => void;
-  setLanguage: (lang: string) => void;
+  setCardDensity: (density: CardDensity) => void;
 }
 
-export const useUserPreferencesStore = create<UserPreferences>()(
+export const useUserPreferencesStore = create<UserPreferencesState>()(
   persist(
     (set) => ({
       reducedMotion: false,
-      highContrast: false,
-      language: "en",
+      cardDensity: "comfortable",
       setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
-      setHighContrast: (enabled) => set({ highContrast: enabled }),
-      setLanguage: (lang) => set({ language: lang }),
+      setCardDensity: (density) => set({ cardDensity: density }),
     }),
     {
       name: "user-preferences-storage",

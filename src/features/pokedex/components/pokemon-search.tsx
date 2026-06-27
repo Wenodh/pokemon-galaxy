@@ -4,8 +4,13 @@ import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { SearchInput } from "@/components/common/search-input";
 import { useDebounce } from "@/hooks/use-debounce";
+import { cn } from "@/lib/utils";
 
-export function PokemonSearch() {
+interface PokemonSearchProps {
+  className?: string;
+}
+
+export function PokemonSearch({ className }: PokemonSearchProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [value, setValue] = React.useState(searchParams.get("search") || "");
@@ -24,7 +29,7 @@ export function PokemonSearch() {
   return (
     <SearchInput
       placeholder="Search by name or number..."
-      className="max-w-md w-full"
+      className={cn("max-w-md w-full", className)}
       value={value}
       onChange={(e) => setValue(e.target.value)}
     />

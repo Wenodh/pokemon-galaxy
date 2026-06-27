@@ -1,0 +1,37 @@
+# Roadmap - Pokémon Galaxy
+
+## ✅ Phase 0: Foundation (Complete)
+- [x] Project scaffolding (Next.js 15, React 19)
+- [x] Modern UI System (Tailwind v4, shadcn/ui)
+- [x] Theme Management (Dark mode first)
+- [x] Global State & API Infrastructure
+- [x] Documentation & Standards
+
+## ✅ Phase 1A: Discovery Experience (Complete)
+- [x] Landing Page with "Featured Pokémon"
+- [x] Fully functional Pokédex
+- [x] GraphQL Integration (PokeAPI)
+- [x] Search & Filter Sync (URL-based)
+- [x] Infinite Scroll
+- [x] User Preferences (Card Density)
+
+## 🏗 Phase 1B: Detailed Insights (Next Up)
+- [ ] **Pokémon Detail Pages**: Comprehensive stats, types, and moves.
+- [ ] **Evolution Chains**: Visualizing growth paths.
+- [ ] **Type Analysis**: Strengths and weaknesses visualizer.
+- [ ] **Performance Pass**: Image LCP optimizations.
+
+## 👥 Phase 2: Personalization
+- [ ] **Favorites**: Persistence for "Starring" Pokémon.
+- [ ] **Team Builder**: Drag-and-drop team construction.
+- [ ] **User Accounts**: Syncing teams across devices (Optional).
+
+## ⚔️ Phase 3: Engagement
+- [ ] **Battle Analyzer**: Competitive viability tools.
+- [ ] **Quiz Mode**: Test your Pokémon knowledge.
+- [ ] **Regional Dexes**: Filter by specific regions.
+
+## 🌌 Phase 4: Innovation
+- [ ] **3D Galaxy Explorer**: A WebGL-based visualization of the Pokémon universe.
+- [ ] **Offline Mode (PWA)**: Full offline Pokédex support.
+- [ ] **Mobile App**: Native-like experience for Android/iOS.
