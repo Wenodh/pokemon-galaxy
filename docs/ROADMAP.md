@@ -15,11 +15,18 @@
 - [x] Infinite Scroll
 - [x] User Preferences (Card Density)
 
-## 🏗 Phase 1B: Detailed Insights (Next Up)
-- [ ] **Pokémon Detail Pages**: Comprehensive stats, types, and moves.
-- [ ] **Evolution Chains**: Visualizing growth paths.
-- [ ] **Type Analysis**: Strengths and weaknesses visualizer.
-- [ ] **Performance Pass**: Image LCP optimizations.
+## ✅ Phase 1B: Detailed Insights (Complete)
+- [x] **Pokémon Detail Pages**: Comprehensive stats, types, and moves.
+- [x] **Evolution Chains**: Visualizing growth paths (with mobile collapsible view).
+- [x] **Type Analysis**: Strengths and weaknesses visualizer.
+- [x] **Discovery Engine**: Related Pokémon ranking (Type + Generation priority).
+- [x] **SEO & Metadata**: Dynamic Open Graph, Twitter Cards, and Canonical URLs.
+
+## 🏗 Phase 1C: Polish & Quality (Next Up)
+- [ ] **Lighthouse Optimization**: Target 95+ Performance.
+- [ ] **Accessibility Audit**: Keyboard nav, ARIA, and contrast.
+- [ ] **Micro-interactions**: Purposeful animations and feedback.
+- [ ] **Responsive Refinement**: Detailed audit from 360px to 1440px.
 
 ## 👥 Phase 2: Personalization
 - [ ] **Favorites**: Persistence for "Starring" Pokémon.
