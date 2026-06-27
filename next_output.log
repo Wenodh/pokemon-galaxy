@@ -9,3 +9,16 @@
 
  ✓ Starting...
  ✓ Ready in 2s
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. Please report the content of /tmp/next-panic-d676ec0dec3c42ec41eb8279cfc6cd3c.log, along with a description of what you were doing when the error occurred, to https://github.com/vercel/next.js/issues/new
+[Error [TurbopackInternalError]: Next.js package not found
+
+Debug info:
+- Execution of get_entrypoints_with_issues failed
+- Execution of Project::entrypoints failed
+- Execution of AppProject::routes failed
+- Execution of directory_tree_to_entrypoints_internal failed
+- Execution of directory_tree_to_loader_tree failed
+- Execution of *FileSystemPath::join failed
+- Execution of get_next_package failed
+- Next.js package not found]
+[?25h
