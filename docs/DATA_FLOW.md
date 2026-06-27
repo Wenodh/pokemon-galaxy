@@ -4,13 +4,22 @@
 
 Data flow in Pokémon Galaxy follows a unidirectional pattern, leveraging TanStack Query for server state and Zustand for client state.
 
-## 📡 Server Data Flow (Pokédex)
+## 📡 Server Data Flow (Pokédex & Details)
 
+### Pokédex Discovery
 1.  **User Action**: User navigates to `/pokedex` or changes the search query.
 2.  **Hook Trigger**: `usePokemonList` hook is invoked with current search parameters.
 3.  **Query Execution**:
     -   TanStack Query checks cache.
     -   If stale, it calls `PokedexRepository.getPokemonList()`.
+
+### Pokémon Details
+1.  **User Action**: User navigates to `/pokemon/[name]`.
+2.  **Server Fetch**: Next.js Server Component calls `PokemonRepository.getPokemonDetails(name)`.
+3.  **Parallel Fetching**:
+    -   `getEvolutionChain(chainId)`
+    -   `getRelatedPokemon(typeIds, currentId, generationId)`
+4.  **Metadata Generation**: `generateMetadata` uses the repository to fetch SEO data before page rendering.
 4.  **Repository Logic**:
     -   `PokedexRepository` executes the GraphQL query via `graphql-client.ts`.
     -   Data is mapped from the GraphQL response shape to the internal `PokemonListItem` type.
@@ -41,6 +50,8 @@ Search parameters in the URL act as the "source of truth" for the Pokédex state
 ## 🛡 Error Propagation
 
 1.  **Repository**: Catches network or GraphQL errors and throws a descriptive `Error`.
-2.  **Hook**: TanStack Query captures the error and sets the `isError` flag.
-3.  **UI**: `PokedexContent` checks `isError` and renders the `ErrorMessage` component.
+2.  **Hook/Component**: TanStack Query (Client) or Server Component (Server) captures the error.
+3.  **UI**:
+    -   Pokédex: Renders the `ErrorMessage` component.
+    -   Details: `notFound()` is triggered for invalid names, rendering `not-found.tsx`.
 4.  **Global Boundary**: Unexpected runtime errors are caught by the `GlobalErrorBoundary` in `RootProvider`.
