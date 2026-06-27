@@ -1,26 +1,36 @@
-import { AlertCircle } from "lucide-react";
+"use client";
+
+import { AlertCircle, RefreshCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface ErrorMessageProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ErrorMessageProps {
+  title?: string;
   message: string;
+  onRetry?: () => void;
+  className?: string;
 }
 
+/**
+ * Standard error display component
+ */
 export function ErrorMessage({
+  title = "Error",
   message,
+  onRetry,
   className,
-  ...props
 }: ErrorMessageProps) {
   return (
-    <div
-      className={cn(
-        "flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-4 text-destructive",
-        className
+    <div className={cn("flex flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/5 p-8 text-center", className)}>
+      <AlertCircle className="mb-4 h-10 w-10 text-destructive" />
+      <h3 className="mb-2 text-lg font-bold text-destructive">{title}</h3>
+      <p className="mb-6 max-w-md text-sm text-muted-foreground">{message}</p>
+      {onRetry && (
+        <Button variant="outline" size="sm" onClick={onRetry}>
+          <RefreshCcw className="mr-2 h-4 w-4" />
+          Retry
+        </Button>
       )}
-      role="alert"
-      {...props}
-    >
-      <AlertCircle className="h-4 w-4 shrink-0" />
-      <p className="text-sm font-medium">{message}</p>
     </div>
   );
 }

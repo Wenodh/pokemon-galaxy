@@ -1,54 +1,52 @@
-import { type ClassValue, clsx } from "clsx";
+import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 /**
- * Merges class names using clsx and tailwind-merge.
+ * Merges Tailwind CSS classes with clsx and tailwind-merge
  */
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
 /**
- * Formats a number with commas.
+ * Formats a number with commas
  */
 export function formatNumber(num: number): string {
   return new Intl.NumberFormat().format(num);
 }
 
 /**
- * Simple debounce function.
+ * Creates a debounced version of a function
  */
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
+export function debounce<T extends (...args: unknown[]) => void>(
+  fn: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
   return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), wait);
   };
 }
 
 /**
- * Promisified sleep function.
+ * Suspends execution for a given amount of time
  */
-export function sleep(ms: number) {
+export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
- * Simple logger utility.
+ * Simple logger utility
  */
 export const logger = {
-  info: (message: string, ...args: any[]) => {
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`[INFO] ${message}`, ...args);
-    }
+  info: (message: string, data?: unknown) => {
+    console.log(`[INFO] ${message}`, data || "");
   },
-  error: (message: string, ...args: any[]) => {
-    console.error(`[ERROR] ${message}`, ...args);
+  error: (message: string, error?: unknown) => {
+    console.error(`[ERROR] ${message}`, error || "");
   },
-  warn: (message: string, ...args: any[]) => {
-    console.warn(`[WARN] ${message}`, ...args);
+  warn: (message: string, data?: unknown) => {
+    console.warn(`[WARN] ${message}`, data || "");
   },
 };

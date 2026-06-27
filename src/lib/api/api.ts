@@ -1,15 +1,16 @@
 /**
- * Base Repository interface for data fetching
+ * Global API configurations and base service helpers
  */
-export interface Repository<T> {
-  getById(id: string | number): Promise<T | null>;
-  getAll(params?: any): Promise<T[]>;
-}
 
-/**
- * Placeholder for future API service implementation
- */
-export const api = {
-  // Pokedex repository will be added here
-  // Pokemon repository will be added here
-};
+export const API_BASE_URL = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT;
+
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    public message: string,
+    public data?: unknown
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}

@@ -1,0 +1,29 @@
+
+> pokemon-galaxy@0.1.0 dev
+> next dev -p 3001
+
+   ▲ Next.js 15.1.8
+   - Local:        http://localhost:3001
+   - Network:      http://192.168.0.2:3001
+
+ ✓ Starting...
+ ✓ Ready in 2.2s
+ ○ Compiling / ...
+ ✓ Compiled / in 6.4s (1986 modules)
+ GET / 200 in 7277ms
+ ○ Compiling /pokedex ...
+ ✓ Compiled /pokedex in 1393ms (2025 modules)
+ GET / 200 in 397ms
+ GET /pokedex 200 in 1878ms
+ GET /pokedex 200 in 29ms
+ GET /pokedex?search=pikachu 200 in 16ms
+ GET /pokedex?search=pikachu 200 in 17ms
+ ✓ Compiled in 703ms (986 modules)
+ ✓ Compiled in 548ms (986 modules)
+ ✓ Compiled in 611ms (986 modules)
+ ✓ Compiled in 264ms (986 modules)
+ ✓ Compiled in 253ms (986 modules)
+ ✓ Compiled in 2.8s (2027 modules)
+ ✓ Compiled in 1369ms (2027 modules)
+ ✓ Compiled in 255ms (987 modules)
+ ✓ Compiled in 1263ms (987 modules)

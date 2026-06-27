@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  endpoint: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "https://graphql.pokeapi.co/v1beta2",
+  endpoint: process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "https://beta.pokeapi.co/graphql/v1beta",
   timeout: 10000,
 };
 

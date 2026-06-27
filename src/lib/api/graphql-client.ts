@@ -1,8 +1,7 @@
 import { GraphQLClient } from "graphql-request";
+import { API_CONFIG } from "./config";
 
-const endpoint = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || "https://graphql.pokeapi.co/v1beta2";
-
-export const graphqlClient = new GraphQLClient(endpoint, {
+export const graphqlClient = new GraphQLClient(API_CONFIG.endpoint, {
   headers: {
     "Content-Type": "application/json",
   },
