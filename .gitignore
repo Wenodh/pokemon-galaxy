@@ -23,6 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 server.log
 dev_server.log
+*.log
 
 # Playwright / Testing
 /test-results/
@@ -36,3 +37,4 @@ dev_server.log
 *.pem
 .vercel
 .turbo
+*.tsbuildinfo
