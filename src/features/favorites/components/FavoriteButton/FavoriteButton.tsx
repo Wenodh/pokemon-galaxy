@@ -72,10 +72,11 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
       )}
     >
       {isLoading ? (
-        <Loader2 className="animate-spin" size={iconSizes[size]} />
+        <Loader2 className="animate-spin" size={iconSizes[size]} aria-hidden="true" />
       ) : (
         <Heart
           size={iconSizes[size]}
+          aria-hidden="true"
           className={cn(
             "transition-all duration-200",
             isFavorite ? "fill-primary text-primary" : "fill-none"
