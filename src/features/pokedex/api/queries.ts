@@ -22,6 +22,23 @@ export const GET_POKEMON_LIST = gql`
   }
 `;
 
+export const GET_POKEMON_BY_IDS = gql`
+  query GetPokemonByIds($ids: [Int!]!) {
+    pokemon_v2_pokemon(where: { id: { _in: $ids } }, order_by: { id: asc }) {
+      id
+      name
+      pokemon_v2_pokemontypes {
+        pokemon_v2_type {
+          name
+        }
+      }
+      pokemon_v2_pokemonsprites {
+        sprites
+      }
+    }
+  }
+`;
+
 export const GET_RANDOM_POKEMON = gql`
   query GetRandomPokemon($limit: Int!, $offset: Int!) {
     pokemon_v2_pokemon(limit: $limit, offset: $offset, order_by: { id: asc }) {

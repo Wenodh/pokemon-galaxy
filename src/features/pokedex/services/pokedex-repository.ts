@@ -1,5 +1,5 @@
 import { graphqlClient } from "@/lib/api/graphql-client";
-import { GET_POKEMON_LIST, GET_RANDOM_POKEMON } from "../api/queries";
+import { GET_POKEMON_LIST, GET_RANDOM_POKEMON, GET_POKEMON_BY_IDS } from "../api/queries";
 import {
   Pokemon,
   PokemonListItem,
@@ -69,6 +69,25 @@ export class PokedexRepository {
     } catch (error) {
       console.error("PokedexRepository.getPokemonList error:", error);
       return [];
+    }
+  }
+
+  /**
+   * Fetches multiple Pokemon by their IDs.
+   */
+  static async getPokemonByIds(ids: number[]): Promise<PokemonListItem[]> {
+    if (!ids || ids.length === 0) return [];
+
+    try {
+      const data = await graphqlClient.request<PokemonListResponse>(
+        GET_POKEMON_BY_IDS,
+        { ids }
+      );
+
+      return data?.pokemon_v2_pokemon?.map((p) => this.mapPokemonToListItem(p)) || [];
+    } catch (error) {
+      console.error("PokedexRepository.getPokemonByIds error:", error);
+      throw error;
     }
   }
 
