@@ -24,7 +24,9 @@ import { PokemonSkeletonGrid } from "@/features/pokedex/components/pokemon-skele
 import { useFavorites } from "@/features/favorites/hooks/useFavorites";
 import { useFavoritePokemon } from "@/features/favorites/hooks/use-favorite-pokemon";
 import { useUserPreferencesStore } from "@/store/user-preferences-store";
-import { filterPokemon, sortPokemon, type SortOption } from "../utils/favorites.sorting";
+import { useSort } from "@/features/search/hooks/useSort";
+import { SortConfig } from "@/features/search/sort";
+import { filterPokemon } from "../utils/favorites.sorting";
 
 export function FavoritesPageContent() {
   const router = useRouter();
@@ -32,7 +34,10 @@ export function FavoritesPageContent() {
   const { cardDensity, setCardDensity } = useUserPreferencesStore();
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [sortBy, setSortBy] = React.useState<SortOption>("number-asc");
+  const [sortConfig, setSortConfig] = React.useState<SortConfig>({
+    field: "id",
+    direction: "asc",
+  });
 
   const { data: pokemonDetails, isLoading, isError, error, refetch } = useFavoritePokemon(favoriteIds);
 
@@ -43,11 +48,12 @@ export function FavoritesPageContent() {
     return pokemonDetails.filter(p => favoriteIds.includes(p.id));
   }, [pokemonDetails, favoriteIds]);
 
-  const filteredAndSortedPokemon = React.useMemo(() => {
+  const filteredPokemon = React.useMemo(() => {
     if (!currentPokemonDetails) return [];
-    const filtered = filterPokemon(currentPokemonDetails, searchQuery);
-    return sortPokemon(filtered, sortBy);
-  }, [currentPokemonDetails, searchQuery, sortBy]);
+    return filterPokemon(currentPokemonDetails, searchQuery);
+  }, [currentPokemonDetails, searchQuery]);
+
+  const sortedPokemon = useSort(filteredPokemon, sortConfig);
 
   if (favoriteIds.length === 0) {
     return (
@@ -112,38 +118,38 @@ export function FavoritesPageContent() {
 
                 <div className="flex items-center gap-1 rounded-md border border-border/50 bg-card/30 p-1">
                   <Button
-                    variant={sortBy === "number-asc" ? "secondary" : "ghost"}
+                    variant={sortConfig.field === "id" && sortConfig.direction === "asc" ? "secondary" : "ghost"}
                     size="sm"
                     className="h-8 px-2"
-                    onClick={() => setSortBy("number-asc")}
+                    onClick={() => setSortConfig({ field: "id", direction: "asc" })}
                     title="Sort by Number (Ascending)"
                   >
                     <ArrowUp10 className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant={sortBy === "number-desc" ? "secondary" : "ghost"}
+                    variant={sortConfig.field === "id" && sortConfig.direction === "desc" ? "secondary" : "ghost"}
                     size="sm"
                     className="h-8 px-2"
-                    onClick={() => setSortBy("number-desc")}
+                    onClick={() => setSortConfig({ field: "id", direction: "desc" })}
                     title="Sort by Number (Descending)"
                   >
                     <ArrowDown10 className="h-4 w-4" />
                   </Button>
                   <div className="mx-1 h-4 w-px bg-border/50" />
                   <Button
-                    variant={sortBy === "name-asc" ? "secondary" : "ghost"}
+                    variant={sortConfig.field === "name" && sortConfig.direction === "asc" ? "secondary" : "ghost"}
                     size="sm"
                     className="h-8 px-2"
-                    onClick={() => setSortBy("name-asc")}
+                    onClick={() => setSortConfig({ field: "name", direction: "asc" })}
                     title="Sort by Name (A-Z)"
                   >
                     <ArrowUpAz className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant={sortBy === "name-desc" ? "secondary" : "ghost"}
+                    variant={sortConfig.field === "name" && sortConfig.direction === "desc" ? "secondary" : "ghost"}
                     size="sm"
                     className="h-8 px-2"
-                    onClick={() => setSortBy("name-desc")}
+                    onClick={() => setSortConfig({ field: "name", direction: "desc" })}
                     title="Sort by Name (Z-A)"
                   >
                     <ArrowDownAz className="h-4 w-4" />
@@ -176,7 +182,7 @@ export function FavoritesPageContent() {
 
         {isLoading ? (
           <PokemonSkeletonGrid count={favoriteIds.length} />
-        ) : filteredAndSortedPokemon.length === 0 ? (
+        ) : sortedPokemon.length === 0 ? (
           <EmptyState
             title="No matches found"
             description={`We couldn't find any of your favorites matching "${searchQuery}".`}
@@ -188,7 +194,7 @@ export function FavoritesPageContent() {
           </EmptyState>
         ) : (
           <PokemonGrid density={cardDensity}>
-            {filteredAndSortedPokemon.map((pokemon) => (
+            {sortedPokemon.map((pokemon) => (
               <PokemonCard
                 key={pokemon.id}
                 pokemon={pokemon}
