@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { PokemonListItem } from "../types";
 import { CardDensity } from "@/store/user-preferences-store";
 import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
+import { CollectionBadges } from "@/features/collection/components/collection-badges";
 
 interface PokemonCardProps {
   pokemon: PokemonListItem;
@@ -87,8 +88,11 @@ export function PokemonCard({ pokemon, className, density = "comfortable" }: Pok
           </div>
 
           <div className={cn("pt-0", isCompact ? "p-3" : "p-5")}>
-          <div className="mb-1 text-[10px] font-mono text-muted-foreground">
-            #{pokemon.id.toString().padStart(3, "0")}
+          <div className="mb-1 flex items-center justify-between">
+            <div className="text-[10px] font-mono text-muted-foreground">
+              #{pokemon.id.toString().padStart(3, "0")}
+            </div>
+            <CollectionBadges pokemonId={pokemon.id} size="sm" />
           </div>
           <h3
             className={cn(
