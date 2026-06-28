@@ -34,3 +34,8 @@
 **Context**: Need a scalable way to manage user favorites.
 **Decision**: Implement a dedicated Favorites feature with Zustand persistence.
 **Rationale**: By isolating favorites into its own domain with granular hooks and selectors, we ensure UI components remain decoupled from the storage implementation. Using `localStorage` via Zustand `persist` provides instant hydration and simplicity for this lightweight data.
+
+## ADR 008: Collection Tracking System
+**Context**: Need to track complex player progress (Seen, Caught, Shiny, etc.).
+**Decision**: Implement a schema-based Collection store keyed by Pokémon ID.
+**Rationale**: Using a Record (Map) keyed by ID ensures O(1) lookups for status checks. Normalizing every entry into a standard interface (seen/caught/etc.) provides a flexible foundation for analytics and future game mechanics (like Team Building) without duplicating tracking logic.
