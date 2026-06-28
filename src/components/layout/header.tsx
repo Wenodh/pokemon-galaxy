@@ -3,13 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Rocket } from "lucide-react";
+import { Menu, X, Rocket, Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Pokedex", href: "/pokedex" },
+  { name: "Favorites", href: "/favorites", icon: Heart },
   { name: "Team Builder", href: "/team-builder" },
   { name: "Battle", href: "/battle" },
   { name: "Quiz", href: "/quiz" },
@@ -33,18 +34,19 @@ export function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex md:gap-x-8">
+        <nav className="hidden md:flex md:items-center md:gap-x-8">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
               className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
+                "flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-primary",
                 pathname === item.href
                   ? "text-foreground"
                   : "text-muted-foreground"
               )}
             >
+              {item.icon && <item.icon className={cn("h-4 w-4", pathname === item.href ? "fill-primary text-primary" : "")} />}
               {item.name}
             </Link>
           ))}
@@ -77,13 +79,14 @@ export function Header() {
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "block rounded-md px-3 py-2 text-base font-medium",
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium",
                   pathname === item.href
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
+                {item.icon && <item.icon className={cn("h-5 w-5", pathname === item.href ? "fill-primary text-primary" : "")} />}
                 {item.name}
               </Link>
             ))}
