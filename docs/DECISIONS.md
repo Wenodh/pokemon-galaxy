@@ -44,3 +44,8 @@
 **Context**: Multiple features (Pokédex, Favorites, Collection) require robust search capabilities.
 **Decision**: Implement a centralized, high-performance Search Engine feature.
 **Rationale**: By decoupling search logic from specific UI features, we ensure consistency in results and ranking across the application. The engine uses a 5-level priority system (ID > Name > Prefix > Partial > Fuzzy) and is optimized for <10ms execution on standard mobile hardware for datasets up to 2000 items.
+
+## ADR 010: Advanced Filtering Engine
+**Context**: Future features require complex, composable filtering (types, stats, generations, etc.).
+**Decision**: Implement a generic, tree-based filtering engine supporting AND/OR logic and nested groups.
+**Rationale**: By building a standalone engine that evaluates predicates against arbitrary objects, we enable sophisticated filtering across all application domains (Pokédex, Favorites, Collection, Team Builder) with a single, highly-testable implementation. Support for Base64 serialization allows for deep-linking filtered views.

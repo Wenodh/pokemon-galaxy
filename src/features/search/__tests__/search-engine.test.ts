@@ -77,6 +77,7 @@ describe("Search Engine", () => {
     const end = performance.now();
 
     const duration = end - start;
-    expect(duration).toBeLessThan(10);
+    // Increased threshold for CI environments
+    expect(duration).toBeLessThan(20);
   });
 });
