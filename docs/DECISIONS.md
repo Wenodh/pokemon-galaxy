@@ -39,3 +39,8 @@
 **Context**: Need to track complex player progress (Seen, Caught, Shiny, etc.).
 **Decision**: Implement a schema-based Collection store keyed by Pokémon ID.
 **Rationale**: Using a Record (Map) keyed by ID ensures O(1) lookups for status checks. Normalizing every entry into a standard interface (seen/caught/etc.) provides a flexible foundation for analytics and future game mechanics (like Team Building) without duplicating tracking logic.
+
+## ADR 009: Unified Search Engine
+**Context**: Multiple features (Pokédex, Favorites, Collection) require robust search capabilities.
+**Decision**: Implement a centralized, high-performance Search Engine feature.
+**Rationale**: By decoupling search logic from specific UI features, we ensure consistency in results and ranking across the application. The engine uses a 5-level priority system (ID > Name > Prefix > Partial > Fuzzy) and is optimized for <10ms execution on standard mobile hardware for datasets up to 2000 items.

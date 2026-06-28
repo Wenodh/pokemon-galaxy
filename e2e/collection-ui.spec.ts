@@ -10,7 +10,7 @@ test.describe("Collection UI Integration", () => {
     await expect(page).toHaveURL(/\/pokemon\/bulbasaur/);
 
     // 3. Verify Collection section exists
-    await expect(page.locator('text="Collection"').first).toBeVisible();
+    await expect(page.locator('text="Collection"').first()).toBeVisible();
 
     // 4. Mark as Caught and Shiny
     const caughtBtn = page.getByRole('button', { name: 'Caught' });
