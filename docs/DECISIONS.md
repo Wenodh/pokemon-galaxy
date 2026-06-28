@@ -29,3 +29,8 @@
 **Context**: Users should not have to re-select "Compact Mode" on every visit.
 **Decision**: Persist preference store to `localStorage`.
 **Rationale**: Improves retention and UX. We use a `mounted` check to avoid hydration mismatches.
+
+## ADR 007: Favorites Domain Layer
+**Context**: Need a scalable way to manage user favorites.
+**Decision**: Implement a dedicated Favorites feature with Zustand persistence.
+**Rationale**: By isolating favorites into its own domain with granular hooks and selectors, we ensure UI components remain decoupled from the storage implementation. Using `localStorage` via Zustand `persist` provides instant hydration and simplicity for this lightweight data.
