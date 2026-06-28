@@ -9,6 +9,7 @@ import { PokemonGrid } from "@/features/pokedex/components/pokemon-grid";
 import { PokemonCard } from "@/features/pokedex/components/pokemon-card";
 import { PokemonSkeletonGrid } from "@/features/pokedex/components/pokemon-skeleton";
 import { useFeaturedPokemon } from "@/features/pokedex/hooks/use-featured-pokemon";
+import { RecentlyViewedSection } from "@/features/recently-viewed/components/recently-viewed-section";
 import { Hero } from "./hero";
 
 export function HomeContent() {
@@ -60,6 +61,8 @@ export function HomeContent() {
           </div>
         </Container>
       </Section>
+
+      <RecentlyViewedSection />
     </>
   );
 }

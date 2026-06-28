@@ -1,10 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PokemonHero } from "./pokemon-hero";
 
 // Mock the FavoriteButton component
 vi.mock("@/features/favorites/components/FavoriteButton", () => ({
-  FavoriteButton: vi.fn(({ pokemonId, pokemonName }: any) => (
+  FavoriteButton: vi.fn(({ pokemonName }: any) => (
     <button data-testid="favorite-button">
       Favorite {pokemonName}
     </button>

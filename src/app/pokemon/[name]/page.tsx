@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PokemonRepository } from "@/features/pokemon/services/pokemon-repository";
 import { PokemonHero, PokemonStats, PokemonAbilities, EvolutionChain, TypeEffectiveness, MoveList, RelatedPokemon } from "@/features/pokemon";
+import { PokemonViewTracker } from "@/features/recently-viewed/components/pokemon-view-tracker";
 import { Container } from "@/components/common/container";
 
 interface PokemonPageProps { params: Promise<{ name: string }>; }
@@ -26,6 +27,7 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
   ]);
   return (
     <div className="min-h-screen pb-20">
+      <PokemonViewTracker pokemonId={pokemon.id} />
       <PokemonHero name={pokemon.name} id={pokemon.id} image={pokemon.image} types={pokemon.types} genus={pokemon.genus} generation={pokemon.generation} height={pokemon.height} weight={pokemon.weight} />
       <Container>
         <div className="mt-8 flex flex-col gap-8 lg:mt-12">
