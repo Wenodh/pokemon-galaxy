@@ -31,6 +31,7 @@
 ## 👥 Phase 2: Personalization
 - [x] **Favorites**: Persistence for "Starring" Pokémon.
 - [x] **Saved Searches & Smart Views**: Reusable user-defined views.
+- [x] **Collection Dashboard**: Personal progress tracker.
 - [ ] **Team Builder**: Drag-and-drop team construction.
 - [ ] **User Accounts**: Syncing teams across devices (Optional).
 
