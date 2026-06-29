@@ -15,6 +15,7 @@ Next.js App Router directory. Contains pages, layouts, and route-specific logic.
 The core of the application's domain logic. Each directory represents a major functional area.
 - **`pokedex/`**: Handles the discovery flow, search, and list view.
 - **`pokemon/`**: Handles detailed Pokémon insights, stats, and evolution chains.
+- **`saved-views/`**: Reusable user-defined views for searching and sorting.
 - **`api/`**: GraphQL queries and mutations.
 - **`components/`**: Feature-specific UI components.
 - **`hooks/`**: Custom hooks specific to the feature.

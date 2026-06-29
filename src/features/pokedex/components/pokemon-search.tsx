@@ -8,15 +8,23 @@ import { cn } from "@/lib/utils";
 
 interface PokemonSearchProps {
   className?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
-export function PokemonSearch({ className }: PokemonSearchProps) {
+export function PokemonSearch({ className, value: externalValue, onChange: setExternalValue }: PokemonSearchProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [value, setValue] = React.useState(searchParams.get("search") || "");
+  const [internalValue, setInternalValue] = React.useState(searchParams.get("search") || "");
+
+  const value = externalValue !== undefined ? externalValue : internalValue;
+  const setValue = setExternalValue || setInternalValue;
+
   const debouncedValue = useDebounce(value, 300);
 
   React.useEffect(() => {
+    if (setExternalValue) return; // Skip URL sync if managed externally
+
     const params = new URLSearchParams(searchParams.toString());
     if (debouncedValue) {
       params.set("search", debouncedValue);
@@ -24,7 +32,7 @@ export function PokemonSearch({ className }: PokemonSearchProps) {
       params.delete("search");
     }
     router.push(`/pokedex?${params.toString()}`, { scroll: false });
-  }, [debouncedValue, router, searchParams]);
+  }, [debouncedValue, router, searchParams, setExternalValue]);
 
   return (
     <SearchInput
