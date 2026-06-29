@@ -29,7 +29,8 @@
 - [ ] **Responsive Refinement**: Detailed audit from 360px to 1440px.
 
 ## 👥 Phase 2: Personalization
-- [ ] **Favorites**: Persistence for "Starring" Pokémon.
+- [x] **Favorites**: Persistence for "Starring" Pokémon.
+- [x] **Saved Searches & Smart Views**: Reusable user-defined views.
 - [ ] **Team Builder**: Drag-and-drop team construction.
 - [ ] **User Accounts**: Syncing teams across devices (Optional).
 
