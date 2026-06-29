@@ -6,6 +6,7 @@ export const selectActiveTeamId = (state: TeamStore) => state.activeTeamId;
 
 export const selectAllTeams = (state: TeamStore): Team[] => {
   const { teams, teamOrder } = state;
+  // Use a stable reference if possible or ensure this is memoized in components
   return teamOrder.map((id) => teams[id]);
 };
 

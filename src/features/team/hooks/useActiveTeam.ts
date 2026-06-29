@@ -1,9 +1,11 @@
+"use client";
+
 import { useShallow } from "zustand/react/shallow";
 import { useTeamStore } from "../store/team.store";
 import { selectActiveTeam } from "../store/team.selectors";
 
 export const useActiveTeam = () => {
-  const activeTeam = useTeamStore(selectActiveTeam);
+  const activeTeam = useTeamStore(useShallow(selectActiveTeam));
   const activeTeamId = useTeamStore((state) => state.activeTeamId);
 
   const {
