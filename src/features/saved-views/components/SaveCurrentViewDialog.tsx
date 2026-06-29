@@ -82,7 +82,7 @@ export function SaveCurrentViewDialog({
             <Input
               id="name"
               value={name}
-              onChange={(e) => {
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setName(e.target.value);
                 setError(null);
               }}

@@ -133,7 +133,7 @@ export function CollectionPageContent() {
                 <PokemonSearch
                   className="w-full sm:w-[300px]"
                   value={searchQuery}
-                  onChange={(val) => {
+                  onChange={(val: string) => {
                     setSearchQuery(val);
                     applyView(null);
                   }}

@@ -12,7 +12,7 @@ if (!global.crypto) {
 describe("SavedViewStore", () => {
   beforeEach(() => {
     useSavedViewStore.getState().applyView(null);
-    const { views, viewIds } = useSavedViewStore.getState();
+    const { viewIds } = useSavedViewStore.getState();
     viewIds.forEach(id => useSavedViewStore.getState().deleteView(id));
   });
 
