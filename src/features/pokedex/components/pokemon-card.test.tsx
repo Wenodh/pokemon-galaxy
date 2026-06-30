@@ -5,25 +5,38 @@ import { PokemonListItem } from "../types";
 
 // Mock the FavoriteButton component
 vi.mock("@/features/favorites/components/FavoriteButton", () => ({
-  FavoriteButton: vi.fn(({ pokemonName, onClick }: any) => (
-    <button
-      data-testid="favorite-button"
-      onClick={(e) => {
-        if (onClick) onClick(e);
-        // Simulate FavoriteButton's stopPropagation
-        e.stopPropagation();
-      }}
-    >
+  FavoriteButton: vi.fn(({ pokemonName }) => (
+    <button data-testid="favorite-button">
       Favorite {pokemonName}
     </button>
   )),
 }));
 
+// Mock CollectionBadges
+vi.mock("@/features/collection/components/collection-badges", () => ({
+  CollectionBadges: () => <div data-testid="collection-badges" />,
+}));
+
 // Mock framer-motion
 vi.mock("framer-motion", () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+    div: ({ children, whileHover, ...props }: any) => <div {...props}>{children}</div>,
   },
+}));
+
+// Mock hooks
+const mockAddPokemon = vi.fn().mockReturnValue({ ok: true });
+vi.mock("@/features/team/hooks/useActiveTeam", () => ({
+  useActiveTeam: () => ({
+    activeTeam: { id: "1", name: "Test Team" },
+    addPokemon: mockAddPokemon,
+  }),
+}));
+
+vi.mock("@/features/team/hooks/useTeams", () => ({
+  useTeams: () => ({
+    teams: [{ id: "1", name: "Test Team" }],
+  }),
 }));
 
 describe("PokemonCard", () => {
@@ -38,7 +51,7 @@ describe("PokemonCard", () => {
     render(<PokemonCard pokemon={mockPokemon} />);
 
     expect(screen.getByText("bulbasaur")).toBeInTheDocument();
-    expect(screen.getByText("#001")).toBeInTheDocument();
+    expect(screen.getByText("#0001")).toBeInTheDocument();
     expect(screen.getByText("grass")).toBeInTheDocument();
     expect(screen.getByText("poison")).toBeInTheDocument();
   });
@@ -54,5 +67,18 @@ describe("PokemonCard", () => {
     render(<PokemonCard pokemon={mockPokemon} />);
 
     expect(screen.getByTestId("favorite-button")).toBeInTheDocument();
+  });
+
+  it("renders Add button in team-builder mode and handles click", () => {
+    render(<PokemonCard pokemon={mockPokemon} mode="team-builder" />);
+
+    const addButton = screen.getByRole("button", { name: /add bulbasaur to active team/i });
+    expect(addButton).toBeInTheDocument();
+
+    // Verify it has z-10 for the fix
+    expect(addButton.parentElement).toHaveClass("z-10");
+
+    addButton.click();
+    expect(mockAddPokemon).toHaveBeenCalledWith("1", 1);
   });
 });

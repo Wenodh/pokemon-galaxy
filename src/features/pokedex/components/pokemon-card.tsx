@@ -192,7 +192,7 @@ export function PokemonCard({
             <div className="text-[10px] font-mono font-bold text-muted-foreground/60 tracking-tighter">
               #{pokemon.id.toString().padStart(4, "0")}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 relative z-10">
               {mode === "team-builder" && (
                 <Button
                   size="sm"
