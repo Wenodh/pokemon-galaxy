@@ -46,6 +46,13 @@ export interface TeamStats {
   bst: number;
 }
 
+export interface ScoreBreakdown {
+  offensiveCoverage: number;
+  defensiveCoverage: number;
+  teamBalance: number;
+  statDistribution: number;
+}
+
 export interface TeamAnalysis {
   offensiveCoverage: OffensiveCoverage[];
   weaknesses: DefensiveRating[];
@@ -58,4 +65,6 @@ export interface TeamAnalysis {
   lowestStat: string;
   pokemonRoles: Record<string, PokemonRole>; // Mapping of Pokemon Name -> Role
   warnings: AnalysisWarning[];
+  overallScore: number;
+  scoreBreakdown: ScoreBreakdown;
 }

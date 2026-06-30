@@ -1,9 +1,73 @@
 import { PokemonDetails } from "@/features/pokemon/types";
-import { TeamAnalysis, AnalysisWarning, TypeCount } from "../types/analysis.types";
+import { TeamAnalysis, AnalysisWarning, TypeCount, ScoreBreakdown } from "../types/analysis.types";
 import { calculateAverageStats } from "./statistics";
 import { detectTeamRoles } from "./roles";
 import { calculateTeamDefensiveMetrics } from "./defensive";
 import { calculateOffensiveCoverage } from "./coverage";
+import { SCORE_WEIGHTS, TOTAL_TYPES } from "../constants/analysis.constants";
+
+/**
+ * Calculates a heuristic score for the team based on multiple factors.
+ *
+ * Weights:
+ * - Offensive Coverage (35%): Based on the number of types the team can hit super-effectively.
+ * - Defensive Coverage (35%): Penalizes stacked weaknesses (3+ Pokémon) and rewards immunities/resistances.
+ * - Team Balance (20%): Penalizes high duplicate type counts and rewards role diversity.
+ * - Stat Distribution (10%): Based on average Base Stat Total (BST) and Speed.
+ */
+function calculateScore(
+  team: PokemonDetails[],
+  analysis: Pick<TeamAnalysis, "offensiveCoverage" | "weaknesses" | "immunities" | "resistances" | "duplicateTypes" | "pokemonRoles" | "averageStats">
+): { overallScore: number; scoreBreakdown: ScoreBreakdown } {
+  if (team.length === 0) {
+    return {
+      overallScore: 0,
+      scoreBreakdown: { offensiveCoverage: 0, defensiveCoverage: 0, teamBalance: 0, statDistribution: 0 }
+    };
+  }
+
+  // 1. Offensive Coverage (35%)
+  const coveredTypes = analysis.offensiveCoverage.filter(c => c.effectiveness > 0).length;
+  const offensiveCoverageScore = (coveredTypes / TOTAL_TYPES) * SCORE_WEIGHTS.OFFENSIVE_COVERAGE;
+
+  // 2. Defensive Coverage (35%)
+  const severeWeaknesses = analysis.weaknesses.filter(w => w.count >= 3).length;
+  const immunitiesCount = analysis.immunities.length;
+  const resistancesCount = analysis.resistances.length;
+
+  let defensiveCoverageScore = (SCORE_WEIGHTS.DEFENSIVE_COVERAGE * 0.7); // Base 70% of the weight
+  defensiveCoverageScore -= severeWeaknesses * 5;
+  defensiveCoverageScore += immunitiesCount * 2;
+  defensiveCoverageScore += resistancesCount * 0.2;
+  defensiveCoverageScore = Math.max(0, Math.min(defensiveCoverageScore, SCORE_WEIGHTS.DEFENSIVE_COVERAGE));
+
+  // 3. Team Balance (20%)
+  const duplicateTypesPenalty = analysis.duplicateTypes.filter(dt => dt.count >= 3).length;
+  const uniqueRoles = new Set(Object.values(analysis.pokemonRoles)).size;
+
+  let teamBalanceScore = 10; // Base balance
+  teamBalanceScore -= duplicateTypesPenalty * 5;
+  teamBalanceScore += (uniqueRoles / team.length) * 10;
+  teamBalanceScore = Math.max(0, Math.min(teamBalanceScore, SCORE_WEIGHTS.TEAM_BALANCE));
+
+  // 4. Stat Distribution (10%)
+  const bstComponent = Math.min(analysis.averageStats.bst / 550, 1) * 5;
+  const speedComponent = Math.min(analysis.averageStats.speed / 100, 1) * 5;
+  const statDistributionScore = bstComponent + speedComponent;
+
+  const totalRaw = offensiveCoverageScore + defensiveCoverageScore + teamBalanceScore + statDistributionScore;
+  const overallScore = Math.round(totalRaw);
+
+  return {
+    overallScore: Math.min(overallScore, 100),
+    scoreBreakdown: {
+      offensiveCoverage: Math.round(offensiveCoverageScore),
+      defensiveCoverage: Math.round(defensiveCoverageScore),
+      teamBalance: Math.round(teamBalanceScore),
+      statDistribution: Math.round(statDistributionScore),
+    }
+  };
+}
 
 export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
   const averageStats = calculateAverageStats(team);
@@ -87,6 +151,16 @@ export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
       });
   }
 
+  const { overallScore, scoreBreakdown } = calculateScore(team, {
+    offensiveCoverage,
+    weaknesses,
+    immunities,
+    resistances,
+    duplicateTypes,
+    pokemonRoles,
+    averageStats,
+  });
+
   return {
     offensiveCoverage,
     weaknesses,
@@ -99,5 +173,7 @@ export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
     lowestStat,
     pokemonRoles,
     warnings,
+    overallScore,
+    scoreBreakdown,
   };
 }

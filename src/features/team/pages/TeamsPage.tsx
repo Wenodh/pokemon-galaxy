@@ -1,7 +1,8 @@
 "use client";
 
 import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Container } from "@/components/common/container";
 import { CreateTeamDialog } from "../components/CreateTeamDialog";
@@ -17,10 +18,23 @@ import { PokemonSkeletonGrid } from "@/features/pokedex/components/pokemon-skele
 import { EmptyState } from "@/components/common/empty-state";
 import { useTeamDialogs } from "../hooks/useTeamDialogs";
 import { useActiveTeam } from "../hooks/useActiveTeam";
+import { useTeamPokemon } from "../hooks/useTeamPokemon";
 import { usePokemonList } from "@/features/pokedex/hooks/use-pokemon-list";
 import { Badge } from "@/components/ui/badge";
-import { Users, SearchX, Plus, Pencil, Copy, Trash, Settings2 } from "lucide-react";
+import {
+  Users,
+  SearchX,
+  Plus,
+  Pencil,
+  Copy,
+  Trash,
+  Settings2,
+  LayoutDashboard,
+  Wrench,
+  Loader2
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useTeams } from "../hooks/useTeams";
 import { toast } from "sonner";
 import {
@@ -30,6 +44,19 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+
+// Lazy-load the Analysis Dashboard
+const TeamAnalysisDashboard = dynamic(
+  () => import("@/features/team-analysis/components/TeamAnalysisDashboard").then(mod => mod.TeamAnalysisDashboard),
+  {
+    loading: () => (
+      <div className="flex flex-col items-center justify-center py-20 space-y-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground animate-pulse">Loading Analysis Dashboard...</p>
+      </div>
+    )
+  }
+);
 
 function ExplorerContent() {
   const searchParams = useSearchParams();
@@ -61,7 +88,9 @@ function ExplorerContent() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-xl font-bold tracking-tight">Pokémon Explorer</h2>
-        <PokemonSearch className="w-full sm:w-[300px]" />
+        <div className="flex items-center gap-2">
+            <PokemonSearch className="w-full sm:w-[300px]" />
+        </div>
       </div>
 
       {isLoading ? (
@@ -96,6 +125,12 @@ function ExplorerContent() {
 }
 
 export const TeamsPage = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const currentTab = searchParams.get("tab") || "builder";
+
   const {
     activeDialog,
     selectedTeam,
@@ -106,6 +141,7 @@ export const TeamsPage = () => {
   } = useTeamDialogs();
 
   const { activeTeam } = useActiveTeam();
+  const { team: fullTeam, isLoading: isTeamLoading } = useTeamPokemon();
   const { duplicateTeam } = useTeams();
 
   const handleDuplicate = () => {
@@ -115,6 +151,12 @@ export const TeamsPage = () => {
         toast.success("Team duplicated successfully.");
       }
     }
+  };
+
+  const handleTabChange = (value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", value);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   return (
@@ -179,45 +221,73 @@ export const TeamsPage = () => {
               )}
             </div>
 
-            <TeamSelector
-              onCreateOpen={openCreateDialog}
-              onRename={openRenameDialog}
-              onDelete={openDeleteDialog}
-            />
+            <div className="flex flex-col gap-4 items-end">
+                <TeamSelector
+                onCreateOpen={openCreateDialog}
+                onRename={openRenameDialog}
+                onDelete={openDeleteDialog}
+                />
+
+                {activeTeam && (
+                    <Tabs value={currentTab} onValueChange={handleTabChange} className="w-full sm:w-auto">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="builder" className="gap-2">
+                                <Wrench className="h-3.5 w-3.5" />
+                                Builder
+                            </TabsTrigger>
+                            <TabsTrigger value="analysis" className="gap-2">
+                                <LayoutDashboard className="h-3.5 w-3.5" />
+                                Analysis
+                            </TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-[340px_1fr]">
-            {/* Left Column: Team Composition */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold tracking-tight">Team Slots</h2>
-              </div>
+          <div className="min-h-[600px]">
+            {activeTeam ? (
+                <Tabs value={currentTab} className="w-full">
+                    <TabsContent value="builder" className="mt-0 space-y-0">
+                         <div className="grid grid-cols-1 gap-12 lg:grid-cols-[340px_1fr]">
+                            {/* Left Column: Team Composition */}
+                            <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-xl font-bold tracking-tight">Team Slots</h2>
+                            </div>
+                            <TeamComposition />
+                            </div>
 
-              {!activeTeam ? (
-                <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/60 p-12 text-center bg-muted/5">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/50">
-                    <Users className="h-7 w-7 text-muted-foreground/50" />
+                            {/* Right Column: Pokémon Explorer */}
+                            <div className="min-w-0">
+                            <Suspense fallback={<PokemonSkeletonGrid count={8} />}>
+                                <ExplorerContent />
+                            </Suspense>
+                            </div>
+                        </div>
+                    </TabsContent>
+                    <TabsContent value="analysis" className="mt-0">
+                        <TeamAnalysisDashboard
+                            pokemon={(fullTeam?.pokemonDetails as any) || []}
+                            isLoading={isTeamLoading}
+                        />
+                    </TabsContent>
+                </Tabs>
+            ) : (
+                <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/60 p-24 text-center bg-muted/5 max-w-2xl mx-auto">
+                  <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-muted/50">
+                    <Users className="h-10 w-10 text-muted-foreground/50" />
                   </div>
-                  <h3 className="font-bold text-lg mb-1">No Team Selected</h3>
-                  <p className="mb-6 text-sm text-muted-foreground max-w-[200px]">
-                    Create a team or select an existing team to begin building.
+                  <h3 className="font-bold text-2xl mb-2">No Team Selected</h3>
+                  <p className="mb-8 text-muted-foreground max-w-md">
+                    Create a new team or select an existing one from the list above to start building and analyzing your squad.
                   </p>
-                  <Button onClick={openCreateDialog} className="rounded-full px-6">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Team
+                  <Button onClick={openCreateDialog} className="rounded-full px-8 py-6 text-lg font-bold">
+                    <Plus className="mr-2 h-5 w-5" />
+                    Create New Team
                   </Button>
                 </div>
-              ) : (
-                <TeamComposition />
-              )}
-            </div>
-
-            {/* Right Column: Pokémon Explorer */}
-            <div className="min-w-0">
-               <Suspense fallback={<PokemonSkeletonGrid count={8} />}>
-                 <ExplorerContent />
-               </Suspense>
-            </div>
+            )}
           </div>
         </div>
 

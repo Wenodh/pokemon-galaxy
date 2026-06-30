@@ -121,4 +121,41 @@ describe("Team Analysis Engine", () => {
       const analysisWithBird = analyzeTeam(teamWithBird);
       expect(analysisWithBird.warnings.some(w => w.type === "NO_GROUND_IMMUNITY")).toBe(false);
   });
+
+  it("should calculate overall score and breakdown", () => {
+    const team = [
+      mockPokemon({
+        name: "P1",
+        types: ["Fire", "Flying"],
+        stats: [
+          { name: "hp", value: 78 },
+          { name: "attack", value: 84 },
+          { name: "defense", value: 78 },
+          { name: "special-attack", value: 109 },
+          { name: "special-defense", value: 85 },
+          { name: "speed", value: 100 },
+        ], // Charizard-like stats
+      }),
+      mockPokemon({
+        name: "P2",
+        types: ["Water", "Ground"],
+        stats: [
+          { name: "hp", value: 100 },
+          { name: "attack", value: 110 },
+          { name: "defense", value: 90 },
+          { name: "special-attack", value: 85 },
+          { name: "special-defense", value: 85 },
+          { name: "speed", value: 60 },
+        ], // Swampert-like stats
+      }),
+    ];
+
+    const analysis = analyzeTeam(team);
+    expect(analysis.overallScore).toBeGreaterThan(0);
+    expect(analysis.overallScore).toBeLessThanOrEqual(100);
+    expect(analysis.scoreBreakdown.offensiveCoverage).toBeGreaterThan(0);
+    expect(analysis.scoreBreakdown.defensiveCoverage).toBeGreaterThan(0);
+    expect(analysis.scoreBreakdown.teamBalance).toBeGreaterThan(0);
+    expect(analysis.scoreBreakdown.statDistribution).toBeGreaterThan(0);
+  });
 });
