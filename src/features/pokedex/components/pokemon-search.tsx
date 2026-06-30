@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { SearchInput } from "@/components/common/search-input";
 import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ interface PokemonSearchProps {
 export function PokemonSearch({ className, value: externalValue, onChange: setExternalValue }: PokemonSearchProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [internalValue, setInternalValue] = React.useState(searchParams.get("search") || "");
 
   const value = externalValue !== undefined ? externalValue : internalValue;
@@ -31,8 +32,13 @@ export function PokemonSearch({ className, value: externalValue, onChange: setEx
     } else {
       params.delete("search");
     }
-    router.push(`/pokedex?${params.toString()}`, { scroll: false });
-  }, [debouncedValue, router, searchParams, setExternalValue]);
+
+    // Only push if the search parameter actually changed to avoid unnecessary navigation
+    const currentSearch = searchParams.get("search") || "";
+    if (debouncedValue !== currentSearch) {
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+  }, [debouncedValue, router, searchParams, setExternalValue, pathname]);
 
   return (
     <SearchInput

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTeams } from "../hooks/useTeams";
 import { Team } from "../types/team.types";
+import { toast } from "sonner";
 
 interface RenameTeamDialogProps {
   team: Team | null;
@@ -46,6 +47,7 @@ export const RenameTeamDialog = ({
     const result = renameTeam(team.id, name);
 
     if (result.ok) {
+      toast.success(`Team renamed to "${name}".`);
       onSuccess?.();
       onOpenChange(false);
     } else {
