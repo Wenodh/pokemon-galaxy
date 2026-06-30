@@ -16,7 +16,6 @@ export function detectRole(pokemon: PokemonDetails): PokemonRole {
 
   // Thresholds for heuristics
   const HIGH_STAT = 100;
-  const VERY_HIGH_STAT = 120;
   const FAST_SPE = 90;
 
   // Sweeper detection
