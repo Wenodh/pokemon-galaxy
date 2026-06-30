@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useTeams } from "../hooks/useTeams";
+import { toast } from "sonner";
 
 interface CreateTeamDialogProps {
   open: boolean;
@@ -41,6 +42,7 @@ export const CreateTeamDialog = ({
     const result = createTeam(name);
 
     if (result.ok) {
+      toast.success(`Team "${name}" created.`);
       onSuccess?.(result.value);
       onOpenChange(false);
     } else {

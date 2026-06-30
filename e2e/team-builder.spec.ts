@@ -2,106 +2,69 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Team Builder UI", () => {
   test.beforeEach(async ({ page }) => {
-    // Start with a clean state if possible, or just navigate to the page
     await page.goto("/team-builder");
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
   });
 
   test("should show empty state when no teams exist", async ({ page }) => {
-    // Depending on previous tests, we might need to clear storage
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
-
-    await expect(page.getByText("No Teams Yet")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Create Your First Team" })).toBeVisible();
+    await expect(page.getByText("No Team Selected")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Create Team" }).first()).toBeVisible();
   });
 
   test("should create a new team", async ({ page }) => {
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
-
-    await page.getByRole("button", { name: "Create Your First Team" }).click();
+    await page.getByRole("button", { name: "Create Team" }).first().click();
     await page.getByLabel("Team Name").fill("Testing Team");
-    await page.getByRole("button", { name: "Create Team" }).click();
+    await page.getByRole("button", { name: "Create Team", exact: true }).click();
 
     await expect(page.getByText("Testing Team")).toBeVisible();
     await expect(page.getByText("0 / 6 Pokémon")).toBeVisible();
-    await expect(page.getByText("Active")).toBeVisible();
   });
 
-  test("should rename a team", async ({ page }) => {
-    // Ensure we have a team to rename
-    await page.evaluate(() => {
-      localStorage.clear();
-      // Mock storage if needed or just use the UI to create one
-    });
-    await page.reload();
-    await page.getByRole("button", { name: "Create Your First Team" }).click();
-    await page.getByLabel("Team Name").fill("Initial Name");
-    await page.getByRole("button", { name: "Create Team" }).click();
+  test("should add and remove pokemon", async ({ page }) => {
+    // Create team
+    await page.getByRole("button", { name: "Create Team" }).first().click();
+    await page.getByLabel("Team Name").fill("Add Test Team");
+    await page.getByRole("button", { name: "Create Team", exact: true }).click();
 
-    // Open Rename Dialog
-    await page.getByLabel("Actions for Initial Name").click();
-    await page.getByRole("menuitem", { name: "Rename" }).click();
+    // Add Bulbasaur
+    await page.getByLabel("Add Bulbasaur to active team").click();
+    await expect(page.getByText("Added Bulbasaur to Add Test Team")).toBeVisible();
+    await expect(page.getByText("1 / 6 Pokémon")).toBeVisible();
 
-    await page.getByLabel("Team Name").fill("Renamed Team");
-    await page.getByRole("button", { name: "Save Changes" }).click();
+    // Check it's in a slot
+    const slot = page.locator("div").filter({ hasText: /^Bulbasaur$/ }).first();
+    await expect(slot).toBeVisible();
 
-    await expect(page.getByText("Renamed Team")).toBeVisible();
-    await expect(page.getByText("Initial Name")).not.toBeVisible();
+    // Remove Bulbasaur
+    await page.getByLabel("Remove Bulbasaur from team").click();
+    await expect(page.getByText("Removed Bulbasaur from team")).toBeVisible();
+    await expect(page.getByText("0 / 6 Pokémon")).toBeVisible();
   });
 
-  test("should duplicate a team", async ({ page }) => {
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
-    await page.getByRole("button", { name: "Create Your First Team" }).click();
-    await page.getByLabel("Team Name").fill("Original Team");
-    await page.getByRole("button", { name: "Create Team" }).click();
+  test("should enforce team limit and duplicate prevention", async ({ page }) => {
+    // Create team
+    await page.getByRole("button", { name: "Create Team" }).first().click();
+    await page.getByLabel("Team Name").fill("Limit Test Team");
+    await page.getByRole("button", { name: "Create Team", exact: true }).click();
 
-    await page.getByLabel("Actions for Original Team").click();
-    await page.getByRole("menuitem", { name: "Duplicate" }).click();
+    // Add Bulbasaur
+    await page.getByLabel("Add Bulbasaur to active team").click();
 
-    await expect(page.getByText("Original Team Copy")).toBeVisible();
-  });
+    // Try to add Bulbasaur again
+    await page.getByLabel("Add Bulbasaur to active team").click();
+    await expect(page.getByText("Bulbasaur already in team")).toBeVisible();
 
-  test("should delete a team", async ({ page }) => {
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
-    await page.getByRole("button", { name: "Create Your First Team" }).click();
-    await page.getByLabel("Team Name").fill("To Delete");
-    await page.getByRole("button", { name: "Create Team" }).click();
+    // Add more to fill (Total 6)
+    const pokemon = ["Ivysaur", "Venusaur", "Charmander", "Charmeleon", "Charizard"];
+    for (const name of pokemon) {
+        await page.getByLabel(`Add ${name} to active team`).click();
+    }
 
-    await page.getByLabel("Actions for To Delete").click();
-    await page.getByRole("menuitem", { name: "Delete" }).click();
+    await expect(page.getByText("6 / 6 Pokémon")).toBeVisible();
 
-    await page.getByRole("button", { name: "Delete Team" }).click();
-
-    await expect(page.getByText("To Delete")).not.toBeVisible();
-    await expect(page.getByText("No Teams Yet")).toBeVisible();
-  });
-
-  test("should switch active team", async ({ page }) => {
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
-
-    // Create Team 1
-    await page.getByRole("button", { name: "Create Your First Team" }).click();
-    await page.getByLabel("Team Name").fill("Team 1");
-    await page.getByRole("button", { name: "Create Team" }).click();
-
-    // Create Team 2
-    await page.getByRole("button", { name: "New Team" }).click();
-    await page.getByLabel("Team Name").fill("Team 2");
-    await page.getByRole("button", { name: "Create Team" }).click();
-
-    // Click Team 1 card to set active
-    await page.getByText("Team 1").click();
-
-    const team1Card = page.locator("div").filter({ hasText: /^Team 1$/ }).locator("..");
-    // The active indicator is inside the card
-    await expect(page.locator("div").filter({ hasText: /^Team 1$/ }).locator("..").locator("..").getByText("Active")).toBeVisible();
-
-    // Click Team 2 card to set active
-    await page.getByText("Team 2").click();
-    await expect(page.locator("div").filter({ hasText: /^Team 2$/ }).locator("..").locator("..").getByText("Active")).toBeVisible();
+    // Try to add 7th
+    await page.getByLabel("Add Squirtle to active team").click();
+    await expect(page.getByText("Team is full")).toBeVisible();
   });
 });

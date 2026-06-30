@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { PageLayout } from "@/components/layout/page-layout";
 import { Container } from "@/components/common/container";
 import { PageHeader } from "@/components/common/page-header";
@@ -12,6 +12,8 @@ import { SearchX } from "lucide-react";
 import { PokemonGrid } from "@/features/pokedex/components/pokemon-grid";
 import { PokemonCard } from "@/features/pokedex/components/pokemon-card";
 import { PokemonSearch } from "@/features/pokedex/components/pokemon-search";
+import { AddToTeamDialog } from "@/features/team/components/AddToTeamDialog";
+import { PokemonListItem } from "@/features/pokedex/types";
 import { PokemonSkeletonGrid } from "@/features/pokedex/components/pokemon-skeleton";
 import { InfiniteLoader } from "@/features/pokedex/components/infinite-loader";
 import { usePokemonList } from "@/features/pokedex/hooks/use-pokemon-list";
@@ -23,6 +25,14 @@ function PokedexContent() {
   const router = useRouter();
   const search = searchParams.get("search") || "";
   const { cardDensity, setCardDensity } = useUserPreferencesStore();
+
+  const [selectedPokemon, setSelectedPokemon] = useState<PokemonListItem | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+  const handleAddToOtherTeam = (pokemon: PokemonListItem) => {
+    setSelectedPokemon(pokemon);
+    setIsAddDialogOpen(true);
+  };
 
   const {
     data,
@@ -100,6 +110,7 @@ function PokedexContent() {
                 key={`${pokemon.id}-${index}`}
                 pokemon={pokemon}
                 density={cardDensity}
+                onAddToOtherTeam={handleAddToOtherTeam}
               />
             ))}
           </PokemonGrid>
@@ -110,6 +121,12 @@ function PokedexContent() {
           />
         </>
       )}
+
+      <AddToTeamDialog
+        pokemon={selectedPokemon}
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+      />
     </div>
   );
 }

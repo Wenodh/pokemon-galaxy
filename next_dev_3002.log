@@ -1,11 +1,20 @@
 
 > pokemon-galaxy@0.2.0 dev /app
-> next dev
+> next dev --port 3002
 
- ⚠ Port 3000 is in use, trying 3001 instead.
-   ▲ Next.js 15.1.8
-   - Local:        http://localhost:3001
-   - Network:      http://192.168.0.2:3001
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://192.168.0.2:3002
+✓ Ready in 578ms
 
- ✓ Starting...
- ✓ Ready in 1812ms
+ GET /teams 404 in 1733ms (next.js: 1181ms, application-code: 552ms)
+ GET /team-builder 200 in 791ms (next.js: 80ms, application-code: 711ms)
+ GET /pokedex 200 in 149ms (next.js: 51ms, application-code: 97ms)
+ GET /team-builder 200 in 136ms (next.js: 6ms, application-code: 130ms)
+ GET /pokedex 200 in 61ms (next.js: 4ms, application-code: 57ms)
+[browser] Image with src "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+ HEAD /team-builder 200 in 115ms (next.js: 5ms, application-code: 111ms)
+ GET /team-builder 200 in 2.2s (next.js: 524ms, application-code: 1661ms)
+ GET /pokedex 200 in 97ms (next.js: 35ms, application-code: 62ms)
+ HEAD /team-builder 200 in 122ms (next.js: 6ms, application-code: 116ms)

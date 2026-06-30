@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTeams } from "../hooks/useTeams";
 import { Team } from "../types/team.types";
+import { toast } from "sonner";
 
 interface DeleteTeamDialogProps {
   team: Team | null;
@@ -29,7 +30,9 @@ export const DeleteTeamDialog = ({
 
   const handleDelete = () => {
     if (!team) return;
+    const teamName = team.name;
     deleteTeam(team.id);
+    toast.success(`Team "${teamName}" deleted.`);
     onSuccess?.();
     onOpenChange(false);
   };
