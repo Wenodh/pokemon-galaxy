@@ -1,5 +1,5 @@
 import { graphqlClient } from "@/lib/api/graphql-client";
-import { GET_POKEMON_LIST, GET_RANDOM_POKEMON, GET_POKEMON_BY_IDS } from "../api/queries";
+import { GET_POKEMON_LIST, GET_RANDOM_POKEMON, GET_POKEMON_BY_IDS, GET_POKEMON_BY_NAME } from "../api/queries";
 import {
   Pokemon,
   PokemonListItem,
@@ -88,6 +88,29 @@ export class PokedexRepository {
     } catch (error) {
       console.error("PokedexRepository.getPokemonByIds error:", error);
       throw error;
+    }
+  }
+
+  /**
+   * Resolves a single Pokemon by name with normalization.
+   */
+  static async getPokemonByName(name: string): Promise<PokemonListItem | null> {
+    if (!name) return null;
+
+    // Normalization: spaces -> hyphens, lowercase, trim
+    const normalizedName = name.trim().toLowerCase().replace(/\s+/g, "-");
+
+    try {
+      const data = await graphqlClient.request<PokemonListResponse>(
+        GET_POKEMON_BY_NAME,
+        { name: normalizedName }
+      );
+
+      const pokemon = data?.pokemon_v2_pokemon?.[0];
+      return pokemon ? this.mapPokemonToListItem(pokemon) : null;
+    } catch (error) {
+      console.error(`PokedexRepository.getPokemonByName error for "${normalizedName}":`, error);
+      return null;
     }
   }
 

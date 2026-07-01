@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { PageLayout } from "@/components/layout/page-layout";
@@ -31,7 +31,9 @@ import {
   Settings2,
   LayoutDashboard,
   Wrench,
-  Loader2
+  Loader2,
+  FileUp,
+  FileDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -44,6 +46,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { ImportTeamDialog } from "@/features/team-import-export/components/ImportTeamDialog";
+import { ExportTeamDialog } from "@/features/team-import-export/components/ExportTeamDialog";
 
 // Lazy-load the Analysis Dashboard
 const TeamAnalysisDashboard = dynamic(
@@ -130,6 +134,8 @@ export const TeamsPage = () => {
   const searchParams = useSearchParams();
 
   const currentTab = searchParams.get("tab") || "builder";
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   const {
     activeDialog,
@@ -173,52 +179,79 @@ export const TeamsPage = () => {
                 </p>
               </div>
 
-              {activeTeam && (
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
-                    <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                    <span className="text-sm font-bold text-primary truncate max-w-[150px]">
-                      {activeTeam.name}
-                    </span>
-                  </div>
-                  <Badge variant="secondary" className="px-3 py-1 font-mono text-xs font-bold">
-                    {activeTeam.pokemon.length} / 6 Pokémon
-                  </Badge>
+              <div className="flex flex-wrap items-center gap-3">
+                  {activeTeam && (
+                    <>
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
+                            <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                            <span className="text-sm font-bold text-primary truncate max-w-[150px]">
+                            {activeTeam.name}
+                            </span>
+                        </div>
+                        <Badge variant="secondary" className="px-3 py-1 font-mono text-xs font-bold">
+                            {activeTeam.pokemon.length} / 6 Pokémon
+                        </Badge>
+                    </>
+                  )}
 
                   <div className="flex items-center gap-1 ml-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-full"
-                      onClick={() => openRenameDialog(activeTeam)}
-                      title="Rename team"
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                          <Settings2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start">
-                         <DropdownMenuItem onClick={handleDuplicate}>
-                          <Copy className="mr-2 h-4 w-4" />
-                          <span>Duplicate Team</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => openDeleteDialog(activeTeam)}
-                          className="text-destructive focus:text-destructive"
+                    {activeTeam && (
+                        <>
+                            <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-full"
+                            onClick={() => openRenameDialog(activeTeam)}
+                            title="Rename team"
+                            >
+                            <Pencil className="h-3.5 w-3.5" />
+                            </Button>
+                            <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                <Settings2 className="h-3.5 w-3.5" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start">
+                                <DropdownMenuItem onClick={handleDuplicate}>
+                                <Copy className="mr-2 h-4 w-4" />
+                                <span>Duplicate Team</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setIsImportOpen(true)}>
+                                    <FileUp className="mr-2 h-4 w-4" />
+                                    <span>Import Team</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setIsExportOpen(true)}>
+                                    <FileDown className="mr-2 h-4 w-4" />
+                                    <span>Export Team</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                onClick={() => openDeleteDialog(activeTeam)}
+                                className="text-destructive focus:text-destructive"
+                                >
+                                <Trash className="mr-2 h-4 w-4" />
+                                <span>Delete Team</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                            </DropdownMenu>
+                        </>
+                    )}
+
+                    {!activeTeam && (
+                         <Button
+                            variant="outline"
+                            size="sm"
+                            className="rounded-full h-8"
+                            onClick={() => setIsImportOpen(true)}
                         >
-                          <Trash className="mr-2 h-4 w-4" />
-                          <span>Delete Team</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                            <FileUp className="mr-2 h-3.5 w-3.5" />
+                            Import Team
+                        </Button>
+                    )}
                   </div>
-                </div>
-              )}
+              </div>
             </div>
 
             <div className="flex flex-col gap-4 items-end">
@@ -282,10 +315,12 @@ export const TeamsPage = () => {
                   <p className="mb-8 text-muted-foreground max-w-md">
                     Create a new team or select an existing one from the list above to start building and analyzing your squad.
                   </p>
-                  <Button onClick={openCreateDialog} className="rounded-full px-8 py-6 text-lg font-bold">
-                    <Plus className="mr-2 h-5 w-5" />
-                    Create New Team
-                  </Button>
+                  <div className="flex gap-4">
+                    <Button onClick={openCreateDialog} className="rounded-full px-8 py-6 text-lg font-bold">
+                        <Plus className="mr-2 h-5 w-5" />
+                        Create New Team
+                    </Button>
+                  </div>
                 </div>
             )}
           </div>
@@ -306,6 +341,17 @@ export const TeamsPage = () => {
           team={selectedTeam}
           open={activeDialog === "delete"}
           onOpenChange={closeDialogs}
+        />
+
+        <ImportTeamDialog
+            open={isImportOpen}
+            onOpenChange={setIsImportOpen}
+        />
+
+        <ExportTeamDialog
+            team={activeTeam}
+            open={isExportOpen}
+            onOpenChange={setIsExportOpen}
         />
       </Container>
     </PageLayout>
