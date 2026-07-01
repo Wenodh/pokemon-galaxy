@@ -1,7 +1,7 @@
 import { PokemonDetails } from "@/features/pokemon/types";
 import { TeamAnalysis, AnalysisWarning, TypeCount, ScoreBreakdown } from "../types/analysis.types";
 import { calculateAverageStats } from "./statistics";
-import { detectTeamRoles } from "./roles";
+import { detectTeamRoles, detectRole } from "./roles";
 import { calculateTeamDefensiveMetrics } from "./defensive";
 import { calculateOffensiveCoverage } from "./coverage";
 import { SCORE_WEIGHTS, TOTAL_TYPES } from "../constants/analysis.constants";
@@ -75,7 +75,7 @@ export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
   const { weaknesses, resistances, immunities } = calculateTeamDefensiveMetrics(team);
   const offensiveCoverage = calculateOffensiveCoverage(team);
 
-  // Duplicate Type Detection
+  // Duplicate Type Detection & Distribution
   const typeCounts: Record<string, number> = {};
   team.forEach((p) => {
     p.types.forEach((t) => {
@@ -84,10 +84,11 @@ export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
     });
   });
 
-  const duplicateTypes: TypeCount[] = Object.entries(typeCounts)
-    .filter(([_, count]) => count > 1)
+  const typeDistribution: TypeCount[] = Object.entries(typeCounts)
     .map(([type, count]) => ({ type, count }))
     .sort((a, b) => b.count - a.count);
+
+  const duplicateTypes: TypeCount[] = typeDistribution.filter((t) => t.count > 1);
 
   // Missing Coverage (Types with zero effectiveness)
   const missingTypes = offensiveCoverage
@@ -99,6 +100,12 @@ export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
   statEntries.sort((a, b) => b[1] - a[1]);
   const highestStat = statEntries[0]?.[0] || "N/A";
   const lowestStat = statEntries[statEntries.length - 1]?.[0] || "N/A";
+
+  // Individual Stats with Roles
+  const individualStats = team.map(p => ({
+      ...p,
+      role: detectRole(p)
+  }));
 
   // Generate Warnings
   const warnings: AnalysisWarning[] = [];
@@ -175,5 +182,7 @@ export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
     warnings,
     overallScore,
     scoreBreakdown,
+    typeDistribution,
+    individualStats,
   };
 }

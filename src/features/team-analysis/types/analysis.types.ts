@@ -1,3 +1,5 @@
+import { PokemonDetails } from "@/features/pokemon/types";
+
 export type PokemonRole =
   | "Physical Sweeper"
   | "Special Sweeper"
@@ -67,4 +69,6 @@ export interface TeamAnalysis {
   warnings: AnalysisWarning[];
   overallScore: number;
   scoreBreakdown: ScoreBreakdown;
+  typeDistribution: TypeCount[]; // All types, including single occurrences
+  individualStats: (PokemonDetails & { role: PokemonRole })[]; // Team members with roles
 }
