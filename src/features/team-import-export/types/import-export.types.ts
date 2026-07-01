@@ -1,10 +1,10 @@
-import { Team } from "@/features/team/types/team.types";
+import { Team, CompetitiveTeamMember } from "@/features/team/types/team.types";
 
 export type ImportExportFormat = "json" | "showdown";
 
 export interface ExportedTeam {
   version: number;
-  team: Pick<Team, "id" | "name" | "pokemon">;
+  team: Pick<Team, "id" | "name" | "pokemon" | "competitive">;
   exportedAt: number;
 }
 
@@ -16,7 +16,11 @@ export type ImportErrorType =
   | "TEAM_TOO_LARGE"
   | "DUPLICATE_POKEMON"
   | "EMPTY_TEAM"
-  | "MALFORMED_SHOWDOWN";
+  | "MALFORMED_SHOWDOWN"
+  | "INVALID_EV_RANGE"
+  | "INVALID_IV_RANGE"
+  | "INVALID_TERA_TYPE"
+  | "TOO_MANY_MOVES";
 
 export interface ImportError {
   code: ImportErrorType;
@@ -29,6 +33,16 @@ export interface ImportValidationResult {
   team?: {
     name: string;
     pokemonIds: number[];
+    competitive?: CompetitiveTeamMember[];
   };
   errors: ImportError[];
+}
+
+export interface ParsedShowdownPokemon extends Omit<CompetitiveTeamMember, "pokemonId"> {
+  species: string;
+}
+
+export interface ParsedShowdownTeam {
+  name: string;
+  pokemon: ParsedShowdownPokemon[];
 }

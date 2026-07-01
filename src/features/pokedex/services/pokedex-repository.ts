@@ -7,6 +7,7 @@ import {
   PokedexFilters,
   PokemonBoolExp,
 } from "../types";
+import { normalizePokemonName } from "@/features/team-import-export/utils/normalization";
 
 export class PokedexRepository {
   private static mapPokemonToListItem(pokemon: Pokemon): PokemonListItem {
@@ -97,8 +98,7 @@ export class PokedexRepository {
   static async getPokemonByName(name: string): Promise<PokemonListItem | null> {
     if (!name) return null;
 
-    // Normalization: spaces -> hyphens, lowercase, trim
-    const normalizedName = name.trim().toLowerCase().replace(/\s+/g, "-");
+    const normalizedName = normalizePokemonName(name);
 
     try {
       const data = await graphqlClient.request<PokemonListResponse>(

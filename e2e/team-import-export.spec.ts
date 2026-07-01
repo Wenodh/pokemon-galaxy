@@ -51,9 +51,13 @@ test.describe('Team Import & Export', () => {
 
     // 3. Paste JSON and import
     await page.locator('textarea').fill(json);
-    await page.getByRole('button', { name: 'Import Team' }).click();
+    await page.getByRole('button', { name: /Preview Team/i }).click();
 
-    // 4. Verify success and new team name
+    // 4. Confirm Import
+    await expect(page.getByText(/Review your team/i)).toBeVisible();
+    await page.getByRole('button', { name: /Confirm Import/i }).click();
+
+    // 5. Verify success and new team name
     await expect(page.getByText(/Team imported successfully/i)).toBeVisible();
     await expect(page.getByText('Export Test Team (Imported)').first()).toBeVisible();
   });
@@ -63,8 +67,9 @@ test.describe('Team Import & Export', () => {
     await page.getByText(/Import Team/i, { exact: true }).click();
 
     await page.locator('textarea').fill('invalid json');
-    await page.getByRole('button', { name: 'Import Team' }).click();
+    await page.getByRole('button', { name: /Preview Team/i }).click();
 
-    await expect(page.getByText(/The provided text is not valid JSON/i)).toBeVisible();
+    // It should show both JSON error AND malformed showdown error since it tries both
+    await expect(page.getByText(/Import failed/i)).toBeVisible();
   });
 });

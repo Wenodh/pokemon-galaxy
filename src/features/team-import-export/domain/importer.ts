@@ -33,15 +33,13 @@ export class TeamImporter {
     const parsed = ShowdownParser.parse(text);
 
     // Resolve names to IDs
-    const pokemonIds: (number | null)[] = [];
+    const resolvedIds: (number | null)[] = [];
 
-    // Process sequentially to avoid hitting rate limits or overwhelming the client
-    // although for 6 items it's fine.
-    for (const name of parsed.pokemonNames) {
-        const pokemon = await PokedexRepository.getPokemonByName(name);
-        pokemonIds.push(pokemon ? pokemon.id : null);
+    for (const p of parsed.pokemon) {
+        const pokemon = await PokedexRepository.getPokemonByName(p.species);
+        resolvedIds.push(pokemon ? pokemon.id : null);
     }
 
-    return TeamValidator.validateShowdownResults(parsed.name, pokemonIds, parsed.pokemonNames);
+    return TeamValidator.validateShowdownResults(parsed, resolvedIds);
   }
 }

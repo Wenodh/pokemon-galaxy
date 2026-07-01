@@ -1,72 +1,114 @@
-export interface ParsedShowdownTeam {
-  name: string;
-  pokemonNames: string[];
-}
+import { ParsedShowdownTeam, ParsedShowdownPokemon } from "../types/import-export.types";
+import { Nature, Gender, StatSpread } from "@/features/team/types/team.types";
 
 export class ShowdownParser {
   /**
-   * Parses a basic Pokémon Showdown text format.
-   * Format:
-   * === Team Name ===
-   *
-   * Species
-   * Level: 100
-   *
-   * Species 2
+   * Parses Pokémon Showdown text format.
+   * Supports: Nickname, Species, Gender, Item, Ability, Level, Shiny, Happiness, Nature, EVs, IVs, Tera Type, Moves.
    */
   static parse(text: string): ParsedShowdownTeam {
-    const lines = text.split("\n").map(l => l.trim());
+    const sections = text.split(/\n\s*\n/);
     let teamName = "";
-    const pokemonNames: string[] = [];
+    const pokemon: ParsedShowdownPokemon[] = [];
 
-    let currentPokemonName = "";
+    // Check for team name header: === Name ===
+    const firstLine = text.split("\n")[0].trim();
+    const nameMatch = firstLine.match(/^===\s*(.*?)\s*===$/);
+    if (nameMatch) {
+      teamName = nameMatch[1];
+    }
 
-    lines.forEach((line) => {
-      if (!line) {
-        if (currentPokemonName) {
-            pokemonNames.push(currentPokemonName);
-            currentPokemonName = "";
-        }
-        return;
+    sections.forEach((section) => {
+      const lines = section.split("\n").map(l => l.trim()).filter(l => l && !l.startsWith("==="));
+      if (lines.length === 0) return;
+
+      const p: ParsedShowdownPokemon = {
+        species: "",
+        moves: [],
+      };
+
+      // First line: [Nickname (]Species[)] [(G)] [@ Item]
+      const firstLine = lines[0];
+
+      // Extract Item
+      const itemParts = firstLine.split(" @ ");
+      if (itemParts.length > 1) {
+        p.item = itemParts[1].trim();
       }
 
-      // Detect team name: === Name ===
-      const nameMatch = line.match(/^===\s*(.*?)\s*===$/);
-      if (nameMatch) {
-        teamName = nameMatch[1];
-        return;
+      let speciesAndNickname = itemParts[0].trim();
+
+      // Extract Gender
+      const genderMatch = speciesAndNickname.match(/\((M|F)\)$/);
+      if (genderMatch) {
+        p.gender = genderMatch[1] as Gender;
+        speciesAndNickname = speciesAndNickname.replace(/\((M|F)\)$/, "").trim();
       }
 
-      // If it's a "key: value" line (like Level: 100), it's part of the current Pokemon's data
-      if (line.includes(":")) {
-        return;
+      // Extract Nickname and Species
+      const nicknameMatch = speciesAndNickname.match(/^(.*?)\s*\((.*?)\)$/);
+      if (nicknameMatch) {
+        p.nickname = nicknameMatch[1].trim();
+        p.species = nicknameMatch[2].trim();
+      } else {
+        p.species = speciesAndNickname;
       }
 
-      // If it starts with - it's a move
-      if (line.startsWith("-")) {
-          return;
-      }
+      // Parse remaining lines
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
 
-      // Standard Showdown first line: Species (Nickname) @ Item
-      // Or just: Species
-      // Since we only care about species for now:
-      if (!currentPokemonName) {
-          // Extract everything before ( or @ or the end of line
-          const speciesPart = line.split(/[(@]/)[0].trim();
-          if (speciesPart) {
-              currentPokemonName = speciesPart;
+        if (line.startsWith("Ability: ")) {
+          p.ability = line.replace("Ability: ", "").trim();
+        } else if (line.startsWith("Level: ")) {
+          p.level = parseInt(line.replace("Level: ", "").trim(), 10);
+        } else if (line.startsWith("Shiny: ")) {
+          p.shiny = line.replace("Shiny: ", "").trim().toLowerCase() === "yes";
+        } else if (line.startsWith("Happiness: ")) {
+          p.happiness = parseInt(line.replace("Happiness: ", "").trim(), 10);
+        } else if (line.startsWith("Tera Type: ")) {
+          p.teraType = line.replace("Tera Type: ", "").trim();
+        } else if (line.endsWith(" Nature")) {
+          p.nature = line.replace(" Nature", "").trim() as Nature;
+        } else if (line.startsWith("EVs: ")) {
+          p.evs = this.parseStats(line.replace("EVs: ", "").trim());
+        } else if (line.startsWith("IVs: ")) {
+          p.ivs = this.parseStats(line.replace("IVs: ", "").trim());
+        } else if (line.startsWith("- ")) {
+          if (p.moves && p.moves.length < 4) {
+            p.moves.push(line.replace("- ", "").trim());
           }
+        }
+      }
+
+      if (p.species) {
+        pokemon.push(p);
       }
     });
 
-    // Catch the last one if it didn't end with an empty line
-    if (currentPokemonName) {
-      pokemonNames.push(currentPokemonName);
-    }
-
     return {
       name: teamName,
-      pokemonNames: pokemonNames.slice(0, 24), // Safety limit
+      pokemon: pokemon,
     };
+  }
+
+  private static parseStats(statsLine: string): StatSpread {
+    const spread: StatSpread = {};
+    const parts = statsLine.split(" / ");
+
+    parts.forEach(part => {
+      const [valueStr, statName] = part.trim().split(" ");
+      const value = parseInt(valueStr, 10);
+      const key = statName.toLowerCase();
+
+      if (key === "hp") spread.hp = value;
+      else if (key === "atk") spread.atk = value;
+      else if (key === "def") spread.def = value;
+      else if (key === "spa") spread.spa = value;
+      else if (key === "spd") spread.spd = value;
+      else if (key === "spe") spread.spe = value;
+    });
+
+    return spread;
   }
 }
