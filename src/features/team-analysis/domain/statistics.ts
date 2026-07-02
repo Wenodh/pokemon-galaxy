@@ -16,7 +16,7 @@ export function calculateAverageStats(team: PokemonDetails[]): TeamStats {
 
   const totals = team.reduce(
     (acc, pokemon) => {
-      pokemon.stats.forEach((stat) => {
+      (pokemon.stats || []).forEach((stat) => {
         const name = stat.name.toLowerCase();
         if (name === "hp") acc.hp += stat.value;
         else if (name === "attack") acc.attack += stat.value;

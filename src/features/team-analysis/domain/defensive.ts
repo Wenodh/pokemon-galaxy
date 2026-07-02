@@ -10,19 +10,19 @@ export function calculateTeamDefensiveMetrics(team: PokemonDetails[]) {
   team.forEach((pokemon) => {
     const effectiveness = calculateTypeEffectiveness(pokemon.types);
 
-    effectiveness.weaknesses.forEach((w) => {
+    (effectiveness.weaknesses || []).forEach((w) => {
       if (!weaknesses[w.type]) weaknesses[w.type] = { multiplier: 1, count: 0 };
       weaknesses[w.type].multiplier *= w.multiplier;
       weaknesses[w.type].count++;
     });
 
-    effectiveness.resistances.forEach((r) => {
+    (effectiveness.resistances || []).forEach((r) => {
       if (!resistances[r.type]) resistances[r.type] = { multiplier: 1, count: 0 };
       resistances[r.type].multiplier *= r.multiplier;
       resistances[r.type].count++;
     });
 
-    effectiveness.immunities.forEach((i) => {
+    (effectiveness.immunities || []).forEach((i) => {
       if (!immunities[i.type]) immunities[i.type] = { multiplier: 0, count: 0 };
       immunities[i.type].count++;
     });
