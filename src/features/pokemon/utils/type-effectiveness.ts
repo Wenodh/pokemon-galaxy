@@ -4,7 +4,7 @@ export interface TypeEffectiveness { weaknesses: { type: string; multiplier: num
 export function calculateTypeEffectiveness(defendingTypes: string[]): TypeEffectiveness {
   const effectiveness: Record<string, number> = {};
   ALL_TYPES.forEach((type) => { effectiveness[type] = 1; });
-  defendingTypes.forEach((defendingType) => {
+  (defendingTypes || []).forEach((defendingType) => {
     const typeName = defendingType.toLowerCase();
     ALL_TYPES.forEach((attackingType) => {
       const multiplier = TYPE_CHART[attackingType]?.[typeName] ?? 1;

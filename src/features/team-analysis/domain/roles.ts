@@ -3,7 +3,7 @@ import { PokemonRole } from "../types/analysis.types";
 
 export function detectRole(pokemon: PokemonDetails): PokemonRole {
   const stats: Record<string, number> = {};
-  pokemon.stats.forEach((s) => {
+  (pokemon.stats || []).forEach((s) => {
     stats[s.name.toLowerCase()] = s.value;
   });
 

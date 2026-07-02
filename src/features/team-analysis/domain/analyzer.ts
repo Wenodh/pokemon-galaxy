@@ -78,7 +78,7 @@ export function analyzeTeam(team: PokemonDetails[]): TeamAnalysis {
   // Duplicate Type Detection & Distribution
   const typeCounts: Record<string, number> = {};
   team.forEach((p) => {
-    p.types.forEach((t) => {
+    (p.types || []).forEach((t) => {
       const type = t.toLowerCase();
       typeCounts[type] = (typeCounts[type] || 0) + 1;
     });

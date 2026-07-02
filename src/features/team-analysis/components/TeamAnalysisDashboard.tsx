@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { analyzeTeam } from "../domain/analyzer";
 import { PokemonDetails } from "@/features/pokemon/types";
 import { AnalysisOverviewCard } from "./AnalysisOverviewCard";
+import { RecommendationList } from "@/features/team-recommendations/components/RecommendationList";
+import { generateRecommendations } from "@/features/team-recommendations/domain/recommendation-engine";
 import { CoverageCard } from "./CoverageCard";
 import { WeaknessCard } from "./WeaknessCard";
 import { ResistanceCard } from "./ResistanceCard";
@@ -45,6 +47,7 @@ interface TeamAnalysisDashboardProps {
 
 export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashboardProps) {
   const analysis = useMemo(() => analyzeTeam(pokemon), [pokemon]);
+  const recommendations = useMemo(() => generateRecommendations(analysis, pokemon.length), [analysis, pokemon.length]);
   const isPreliminary = pokemon.length < 2;
 
   const coverageSummary = useMemo(() => {
@@ -60,20 +63,31 @@ export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashbo
 
   if (pokemon.length === 0 && !isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/60 p-12 text-center bg-muted/5">
-        <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/50">
-          <LayoutDashboard className="h-7 w-7 text-muted-foreground/50" />
+      <div className="space-y-16 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <section className="space-y-6">
+          <RecommendationList recommendations={recommendations} />
+        </section>
+
+        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/60 p-12 text-center bg-muted/5">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/50">
+            <LayoutDashboard className="h-7 w-7 text-muted-foreground/50" />
+          </div>
+          <h3 className="font-bold text-lg mb-1">No Analysis Available</h3>
+          <p className="mb-6 text-sm text-muted-foreground max-w-[200px]">
+            Add Pokémon to your team to see analysis results.
+          </p>
         </div>
-        <h3 className="font-bold text-lg mb-1">No Analysis Available</h3>
-        <p className="mb-6 text-sm text-muted-foreground max-w-[200px]">
-          Add Pokémon to your team to see analysis results.
-        </p>
       </div>
     );
   }
 
   return (
     <div className="space-y-16 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* 0. Recommendations Section */}
+      <section className="space-y-6">
+        <RecommendationList recommendations={recommendations} />
+      </section>
+
       {/* 1. Overview Section */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b pb-2">

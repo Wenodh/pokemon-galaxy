@@ -35,8 +35,8 @@ export function calculateOffensiveCoverage(team: PokemonDetails[]): OffensiveCov
     // Check coverage based on the moves the Pokemon has
     // Since we don't have a full move set yet, we use a heuristic:
     // A Pokemon provides coverage for its own types (STAB) plus any types it has moves for.
-    const moveTypes = new Set(pokemon.moves.map((m) => m.type.toLowerCase()));
-    const relevantTypes = new Set([...pokemon.types.map(t => t.toLowerCase()), ...moveTypes]);
+    const moveTypes = new Set((pokemon.moves || []).map((m) => m.type.toLowerCase()));
+    const relevantTypes = new Set([...(pokemon.types || []).map(t => t.toLowerCase()), ...moveTypes]);
 
     relevantTypes.forEach((atkType) => {
       if (TYPE_CHART[atkType]) {
