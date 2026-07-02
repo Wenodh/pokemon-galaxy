@@ -27,6 +27,7 @@ export const useTeamStore = create<TeamStore>()(
           id: crypto.randomUUID(),
           name: validation.value,
           pokemon: [],
+          competitive: [],
           createdAt: Date.now(),
           updatedAt: Date.now(),
         };
@@ -101,23 +102,33 @@ export const useTeamStore = create<TeamStore>()(
         return { ok: true, value: newTeam.id };
       },
 
-      addPokemon: (teamId, pokemonId) => {
+      addPokemon: (teamId, pokemonId, competitive) => {
         const team = get().teams[teamId];
         if (!team) return { ok: false, error: "TEAM_NOT_FOUND" };
 
         const validation = validateAddPokemon(team, pokemonId);
         if (!validation.ok) return validation;
 
-        set((state) => ({
-          teams: {
-            ...state.teams,
-            [teamId]: {
-              ...team,
-              pokemon: [...team.pokemon, pokemonId],
-              updatedAt: Date.now(),
+        set((state) => {
+          const newPokemon = [...team.pokemon, pokemonId];
+          const newCompetitive = team.competitive ? [...team.competitive] : [];
+
+          if (competitive) {
+              newCompetitive[newPokemon.length - 1] = competitive;
+          }
+
+          return {
+            teams: {
+              ...state.teams,
+              [teamId]: {
+                ...team,
+                pokemon: newPokemon,
+                competitive: newCompetitive,
+                updatedAt: Date.now(),
+              },
             },
-          },
-        }));
+          };
+        });
 
         return { ok: true, value: undefined };
       },
@@ -126,20 +137,32 @@ export const useTeamStore = create<TeamStore>()(
         const team = get().teams[teamId];
         if (!team) return { ok: false, error: "TEAM_NOT_FOUND" };
 
-        if (!team.pokemon.includes(pokemonId)) {
+        const index = team.pokemon.indexOf(pokemonId);
+        if (index === -1) {
           return { ok: false, error: "POKEMON_NOT_IN_TEAM" };
         }
 
-        set((state) => ({
-          teams: {
-            ...state.teams,
-            [teamId]: {
-              ...team,
-              pokemon: team.pokemon.filter((id) => id !== pokemonId),
-              updatedAt: Date.now(),
+        set((state) => {
+          const newPokemon = [...team.pokemon];
+          newPokemon.splice(index, 1);
+
+          const newCompetitive = team.competitive ? [...team.competitive] : [];
+          if (newCompetitive.length > 0) {
+              newCompetitive.splice(index, 1);
+          }
+
+          return {
+            teams: {
+              ...state.teams,
+              [teamId]: {
+                ...team,
+                pokemon: newPokemon,
+                competitive: newCompetitive,
+                updatedAt: Date.now(),
+              },
             },
-          },
-        }));
+          };
+        });
 
         return { ok: true, value: undefined };
       },
@@ -161,12 +184,19 @@ export const useTeamStore = create<TeamStore>()(
         const [moved] = newPokemon.splice(fromIndex, 1);
         newPokemon.splice(toIndex, 0, moved);
 
+        const newCompetitive = team.competitive ? [...team.competitive] : [];
+        if (newCompetitive.length > 0) {
+            const [movedComp] = newCompetitive.splice(fromIndex, 1);
+            newCompetitive.splice(toIndex, 0, movedComp);
+        }
+
         set((state) => ({
           teams: {
             ...state.teams,
             [teamId]: {
               ...team,
               pokemon: newPokemon,
+              competitive: newCompetitive,
               updatedAt: Date.now(),
             },
           },
@@ -185,6 +215,7 @@ export const useTeamStore = create<TeamStore>()(
             [teamId]: {
               ...team,
               pokemon: [],
+              competitive: [],
               updatedAt: Date.now(),
             },
           },

@@ -15,7 +15,7 @@ import { TeamExporter } from "../domain/exporter";
 import { Team } from "@/features/team/types/team.types";
 import { useTeamPokemon } from "@/features/team/hooks/useTeamPokemon";
 import { toast } from "sonner";
-import { Copy, FileJson, FileText, Check } from "lucide-react";
+import { Copy, FileJson, FileText, Check, Download } from "lucide-react";
 import { copyToClipboard } from "../utils/clipboard";
 import { PokemonListItem } from "@/features/pokedex/types";
 
@@ -36,7 +36,7 @@ export function ExportTeamDialog({ team, open, onOpenChange }: ExportTeamDialogP
         return TeamExporter.exportToJson(team);
     } else {
         const pokemonDetails = (fullTeam?.pokemonDetails as any as PokemonListItem[]) || [];
-        return TeamExporter.exportToShowdown(team.name, pokemonDetails);
+        return TeamExporter.exportToShowdown(team.name, pokemonDetails, team.competitive);
     }
   }, [team, format, fullTeam]);
 
@@ -51,15 +51,35 @@ export function ExportTeamDialog({ team, open, onOpenChange }: ExportTeamDialogP
     }
   };
 
+  const handleDownload = () => {
+      if (!team) return;
+
+      const filename = format === "json"
+        ? `${TeamExporter.getSanitizedFilename(team.name).replace(".txt", "")}.json`
+        : TeamExporter.getSanitizedFilename(team.name);
+
+      const blob = new Blob([exportText], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast.success(`Downloaded as ${filename}`);
+  };
+
   if (!team) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Export Team</DialogTitle>
           <DialogDescription>
-            Choose a format to export your team. The content will be copied to your clipboard.
+            Choose a format to export your team. You can copy the text or download it as a file.
           </DialogDescription>
         </DialogHeader>
 
@@ -86,30 +106,37 @@ export function ExportTeamDialog({ team, open, onOpenChange }: ExportTeamDialogP
           <div className="relative">
             <Textarea
               readOnly
-              className="min-h-[200px] font-mono text-xs resize-none bg-muted/30"
+              className="min-h-[250px] font-mono text-xs resize-none bg-muted/30 p-4"
               value={exportText}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/20 to-transparent pointer-events-none" />
           </div>
         </div>
 
-        <DialogFooter className="sm:justify-between">
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Close
-          </Button>
-          <Button onClick={handleCopy} className="min-w-[140px]">
-            {copied ? (
-                <>
-                    <Check className="mr-2 h-4 w-4" />
-                    Copied!
-                </>
-            ) : (
-                <>
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copy to Clipboard
-                </>
-            )}
-          </Button>
+        <DialogFooter className="flex-col sm:flex-row gap-2 sm:justify-between">
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" onClick={handleDownload} className="flex-1 sm:flex-none">
+                <Download className="mr-2 h-4 w-4" />
+                Download
+            </Button>
+          </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="ghost" onClick={() => onOpenChange(false)} className="flex-1 sm:flex-none">
+                Close
+            </Button>
+            <Button onClick={handleCopy} className="flex-1 sm:flex-none min-w-[140px]">
+                {copied ? (
+                    <>
+                        <Check className="mr-2 h-4 w-4" />
+                        Copied!
+                    </>
+                ) : (
+                    <>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copy to Clipboard
+                    </>
+                )}
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
