@@ -31,7 +31,7 @@ export function StatComparisonChart({ members }: StatComparisonChartProps) {
   const [selectedStat, setSelectedStat] = useState("hp");
 
   const chartData = members.map(m => {
-    const statValue = m.stats.find((s: any) => s.name.toLowerCase() === selectedStat)?.value || 0;
+    const statValue = m.stats?.find((s: any) => s.name.toLowerCase() === selectedStat)?.value || 0;
     return {
       name: m.name,
       value: statValue,
