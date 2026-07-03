@@ -7,6 +7,9 @@ import { PokemonDetails } from "@/features/pokemon/types";
 import { AnalysisOverviewCard } from "./AnalysisOverviewCard";
 import { RecommendationList } from "@/features/team-recommendations/components/RecommendationList";
 import { generateRecommendations } from "@/features/team-recommendations/domain/recommendation-engine";
+import { SuggestionList } from "@/features/team-suggestions/components/SuggestionList";
+import { getSuggestions } from "@/features/team-suggestions/domain/suggestion-engine";
+import { useActiveTeam } from "@/features/team/hooks/useActiveTeam";
 import { CoverageCard } from "./CoverageCard";
 import { WeaknessCard } from "./WeaknessCard";
 import { ResistanceCard } from "./ResistanceCard";
@@ -46,8 +49,19 @@ interface TeamAnalysisDashboardProps {
 }
 
 export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashboardProps) {
+  const { activeTeam } = useActiveTeam();
   const analysis = useMemo(() => analyzeTeam(pokemon), [pokemon]);
   const recommendations = useMemo(() => generateRecommendations(analysis, pokemon.length), [analysis, pokemon.length]);
+  const suggestions = useMemo(() => {
+    if (!activeTeam || !analysis || !recommendations) return [];
+    try {
+        return getSuggestions(activeTeam, analysis, recommendations);
+    } catch (e) {
+        console.error("Suggestion Engine Error:", e);
+        return [];
+    }
+  }, [activeTeam, analysis, recommendations]);
+
   const isPreliminary = pokemon.length < 2;
 
   const coverageSummary = useMemo(() => {
@@ -83,9 +97,10 @@ export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashbo
 
   return (
     <div className="space-y-16 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* 0. Recommendations Section */}
-      <section className="space-y-6">
+      {/* 0. Recommendations & Suggestions Section */}
+      <section className="space-y-12">
         <RecommendationList recommendations={recommendations} />
+        <SuggestionList suggestions={suggestions} />
       </section>
 
       {/* 1. Overview Section */}
