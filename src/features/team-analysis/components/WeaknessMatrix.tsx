@@ -7,9 +7,9 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { AlertTriangle, Shield, Zap, Minus } from "lucide-react";
 
 interface WeaknessMatrixProps {
-  weaknesses: DefensiveRating[];
-  resistances: DefensiveRating[];
-  immunities: DefensiveRating[];
+  weaknesses?: DefensiveRating[];
+  resistances?: DefensiveRating[];
+  immunities?: DefensiveRating[];
 }
 
 const ALL_TYPES = [
@@ -17,7 +17,11 @@ const ALL_TYPES = [
   "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"
 ];
 
-export function WeaknessMatrix({ weaknesses, resistances, immunities }: WeaknessMatrixProps) {
+export function WeaknessMatrix({
+  weaknesses = [],
+  resistances = [],
+  immunities = []
+}: WeaknessMatrixProps) {
   return (
     <Card>
       <CardHeader>

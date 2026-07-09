@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 
 interface CoverageMatrixProps {
-  coverage: OffensiveCoverage[];
+  coverage?: OffensiveCoverage[];
 }
 
 const ALL_TYPES = [
@@ -15,7 +15,7 @@ const ALL_TYPES = [
   "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"
 ];
 
-export function CoverageMatrix({ coverage }: CoverageMatrixProps) {
+export function CoverageMatrix({ coverage = [] }: CoverageMatrixProps) {
   return (
     <Card>
       <CardHeader>
@@ -39,7 +39,7 @@ export function CoverageMatrix({ coverage }: CoverageMatrixProps) {
                   className={cn(
                     "flex flex-col items-center justify-center p-2 rounded-lg border transition-all hover:ring-2 hover:ring-primary/20",
                     isCovered
-                      ? "bg-green-50/50 border-green-200 dark:bg-green-900/10 dark:border-green-900/30"
+                      ? "bg-green-50/50 border-green-200 dark:bg-blue-900/10 dark:border-blue-900/30"
                       : "bg-muted/30 border-dashed"
                   )}
                 >

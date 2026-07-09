@@ -170,7 +170,7 @@ export const TeamsPage = () => {
       <Container>
         <div className="flex flex-col gap-8 py-6">
           {/* Enhanced Header */}
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between border-b pb-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:items-end sm:justify-between border-b pb-8">
             <div className="space-y-4">
               <div>
                 <h1 className="text-4xl font-black tracking-tight mb-1">Team Builder</h1>
@@ -254,7 +254,7 @@ export const TeamsPage = () => {
               </div>
             </div>
 
-            <div className="flex flex-col gap-4 items-end">
+            <div className="flex flex-col gap-4 items-center sm:items-end">
                 <TeamSelector
                 onCreateOpen={openCreateDialog}
                 onRename={openRenameDialog}
@@ -300,7 +300,7 @@ export const TeamsPage = () => {
                         </div>
                     </TabsContent>
                     <TabsContent value="analysis" className="mt-0">
-                        <TeamAnalysisDashboard
+                        <TeamAnalysisDashboard isActive={currentTab === "analysis"}
                             pokemon={(fullTeam?.pokemonDetails as any) || []}
                             isLoading={isTeamLoading}
                         />

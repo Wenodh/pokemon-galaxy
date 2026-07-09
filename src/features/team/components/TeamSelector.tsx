@@ -41,10 +41,10 @@ export const TeamSelector = ({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full sm:w-auto">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="w-[240px] justify-between h-11 px-4 rounded-xl shadow-sm hover:bg-muted/50 transition-all border-border/60">
+          <Button variant="outline" className="w-full sm:w-[240px] justify-between h-11 px-4 rounded-xl shadow-sm hover:bg-muted/50 transition-all border-border/60">
             <span className="truncate font-bold">
               {activeTeam ? activeTeam.name : "Select a team"}
             </span>

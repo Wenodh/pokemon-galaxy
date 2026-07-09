@@ -35,6 +35,12 @@ export const GET_POKEMON_BY_IDS = gql`
       pokemon_v2_pokemonsprites {
         sprites
       }
+      pokemon_v2_pokemonstats {
+        base_stat
+        pokemon_v2_stat {
+          name
+        }
+      }
     }
   }
 `;
