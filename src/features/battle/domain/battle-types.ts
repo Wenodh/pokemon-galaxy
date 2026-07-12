@@ -37,9 +37,15 @@ export interface BattleState {
 
 export type BattleActionType = "ATTACK" | "SWITCH" | "SKIP";
 
+export type MoveCategory = "PHYSICAL" | "SPECIAL" | "STATUS";
+
 export interface AttackActionPayload {
   moveName: string;
   basePower: number;
+  type: string;
+  category: MoveCategory;
+  accuracy: number; // 0-100, 0 for never-miss
+  priority: number;
 }
 
 export interface SwitchActionPayload {
@@ -71,6 +77,7 @@ export interface BattleEvent {
 
 export interface Battle {
   id: string;
+  seed: number;
   currentTurn: number;
   state: BattleState;
   log: BattleEvent[];

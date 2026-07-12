@@ -7,7 +7,7 @@ interface BattleControlsProps {
   disabled?: boolean;
   activePokemon: BattlePokemon | undefined;
   team: BattlePokemon[];
-  onAttack: (moveName: string, power: number) => void;
+  onAttack: (moveName: string, power: number, type: string, category: string, accuracy: number) => void;
   onSwitch: (index: number) => void;
   onEndTurn: () => void;
 }
@@ -30,7 +30,7 @@ export const BattleControls: React.FC<BattleControlsProps> = ({
         <div className="grid grid-cols-2 gap-2">
           <Button
             disabled={!isPlayerTurn || disabled || activePokemon.fainted}
-            onClick={() => onAttack("Tackle", 40)}
+            onClick={() => onAttack("Tackle", 40, "Normal", "PHYSICAL", 100)}
             variant="default"
             className="h-12"
           >
@@ -38,11 +38,11 @@ export const BattleControls: React.FC<BattleControlsProps> = ({
           </Button>
           <Button
             disabled={!isPlayerTurn || disabled || activePokemon.fainted}
-            onClick={() => onAttack("Slam", 80)}
+            onClick={() => onAttack("Thunderbolt", 90, "Electric", "SPECIAL", 100)}
             variant="secondary"
             className="h-12"
           >
-            Slam (80)
+            Thunderbolt (90)
           </Button>
         </div>
       </div>

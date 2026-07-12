@@ -1,8 +1,17 @@
 import { BattleAction } from "./battle-types";
 
-export const createAttackAction = (moveName: string, basePower: number): BattleAction => ({
+import { MoveCategory } from "./battle-types";
+
+export const createAttackAction = (
+  moveName: string,
+  basePower: number,
+  type: string,
+  category: MoveCategory = "PHYSICAL",
+  accuracy: number = 100,
+  priority: number = 0
+): BattleAction => ({
   type: "ATTACK",
-  payload: { moveName, basePower }
+  payload: { moveName, basePower, type, category, accuracy, priority }
 });
 
 export const createSwitchAction = (index: number): BattleAction => ({

@@ -2,23 +2,34 @@ import { useCallback } from "react";
 import { useBattleStore } from "../store/battle.store";
 
 export const useBattle = () => {
-  const { battle, initializeBattle, executeAction, resetBattle } = useBattleStore();
+  const { battle, initializeBattle, executeAction, resolveTurn, resetBattle } = useBattleStore();
 
-  const playerAttack = useCallback((moveName: string, basePower: number) => {
-    executeAction({ type: "ATTACK", payload: { moveName, basePower } }, "PLAYER");
-  }, [executeAction]);
+  const playerAttack = useCallback((
+    moveName: string,
+    basePower: number,
+    type: string,
+    category: any = "PHYSICAL",
+    accuracy: number = 100,
+    priority: number = 0
+  ) => {
+    // For now, we'll auto-resolve turns in this foundational phase
+    // In a real battle, we'd wait for opponent action
+    const playerAction: any = { type: "ATTACK", payload: { moveName, basePower, type, category, accuracy, priority } };
+    const opponentAction: any = {
+      type: "ATTACK",
+      payload: { moveName: "Tackle", basePower: 40, type: "Normal", category: "PHYSICAL", accuracy: 100, priority: 0 }
+    };
+
+    resolveTurn(playerAction, opponentAction);
+  }, [resolveTurn]);
 
   const playerSwitch = useCallback((index: number) => {
     executeAction({ type: "SWITCH", payload: { index } }, "PLAYER");
   }, [executeAction]);
 
   const endTurn = useCallback(() => {
-    // If it's the opponent's turn, execute a simple AI action or skip
-    if (battle?.state.attacker === "OPPONENT") {
-        // Simple AI: always attack with a default move for now
-        executeAction({ type: "ATTACK", payload: { moveName: "Tackle", basePower: 40 } }, "OPPONENT");
-    }
-  }, [battle, executeAction]);
+    // Turn resolution is now handled inside playerAttack for the foundation demo
+  }, []);
 
   return {
     battle,

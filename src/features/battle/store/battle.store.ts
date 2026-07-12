@@ -6,6 +6,7 @@ interface BattleStore {
   battle: Battle | null;
   initializeBattle: (playerTeam: BattlePokemon[], opponentTeam: BattlePokemon[]) => void;
   executeAction: (action: BattleAction, participant: "PLAYER" | "OPPONENT") => void;
+  resolveTurn: (playerAction: BattleAction, opponentAction: BattleAction) => void;
   resetBattle: () => void;
 }
 
@@ -15,6 +16,7 @@ export const useBattleStore = create<BattleStore>((set) => ({
   initializeBattle: (playerTeam, opponentTeam) => {
     const battle: Battle = {
       id: crypto.randomUUID(),
+      seed: Math.floor(Math.random() * 1000000),
       currentTurn: 1,
       state: {
         player: {
@@ -41,6 +43,14 @@ export const useBattleStore = create<BattleStore>((set) => ({
     set((state) => {
       if (!state.battle) return state;
       const updatedBattle = BattleEngine.applyAction(state.battle, action, participant);
+      return { battle: updatedBattle };
+    });
+  },
+
+  resolveTurn: (playerAction, opponentAction) => {
+    set((state) => {
+      if (!state.battle) return state;
+      const updatedBattle = BattleEngine.resolveTurn(state.battle, playerAction, opponentAction);
       return { battle: updatedBattle };
     });
   },
