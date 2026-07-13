@@ -22,7 +22,7 @@ export const BattleArena: React.FC = () => {
 
   // Mock initial battle for demonstration
   const startDemoBattle = () => {
-    const pTeam = [
+    const pTeam: any[] = [
       {
         id: 25,
         name: "Pikachu",
@@ -32,7 +32,12 @@ export const BattleArena: React.FC = () => {
         stats: { hp: 120, atk: 110, def: 90, spa: 100, spd: 100, spe: 150 },
         types: ["Electric"],
         image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
-        fainted: false
+        fainted: false,
+        status: "NONE",
+        statusTurns: 0,
+        ability: "Static",
+        item: "Life Orb",
+        statChanges: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }
       },
       {
         id: 1,
@@ -43,11 +48,16 @@ export const BattleArena: React.FC = () => {
         stats: { hp: 140, atk: 95, def: 110, spa: 120, spd: 120, spe: 90 },
         types: ["Grass", "Poison"],
         image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-        fainted: false
+        fainted: false,
+        status: "NONE",
+        statusTurns: 0,
+        ability: "Overgrow",
+        item: "Leftovers",
+        statChanges: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }
       }
     ];
 
-    const oTeam = [
+    const oTeam: any[] = [
       {
         id: 4,
         name: "Charmander",
@@ -57,7 +67,12 @@ export const BattleArena: React.FC = () => {
         stats: { hp: 120, atk: 120, def: 85, spa: 110, spd: 100, spe: 130 },
         types: ["Fire"],
         image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
-        fainted: false
+        fainted: false,
+        status: "NONE",
+        statusTurns: 0,
+        ability: "Blaze",
+        item: "Focus Sash",
+        statChanges: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }
       },
       {
         id: 7,
@@ -68,7 +83,12 @@ export const BattleArena: React.FC = () => {
         stats: { hp: 135, atk: 100, def: 140, spa: 100, spd: 140, spe: 85 },
         types: ["Water"],
         image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
-        fainted: false
+        fainted: false,
+        status: "NONE",
+        statusTurns: 0,
+        ability: "Torrent",
+        item: "Rocky Helmet",
+        statChanges: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }
       }
     ];
 

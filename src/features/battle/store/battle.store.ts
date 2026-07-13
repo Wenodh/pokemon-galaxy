@@ -22,18 +22,34 @@ export const useBattleStore = create<BattleStore>((set) => ({
         player: {
           team: playerTeam,
           activePokemonIndex: 0,
+          hazards: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
+          fieldEffects: { reflect: 0, lightScreen: 0, auroraVeil: 0, tailwind: 0 }
         },
         opponent: {
           team: opponentTeam,
           activePokemonIndex: 0,
+          hazards: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
+          fieldEffects: { reflect: 0, lightScreen: 0, auroraVeil: 0, tailwind: 0 }
         },
         status: "ONGOING",
+        weather: { type: "NONE", turns: 0 },
+        terrain: { type: "NONE", turns: 0 },
         attacker: "PLAYER",
         defender: "OPPONENT",
       },
       log: [
-        BattleEngine.createEvent("BATTLE_START", 1, "Battle Started!"),
-        BattleEngine.createEvent("TURN_START", 1, "Turn 1"),
+        {
+          id: Math.random().toString(36).substring(2, 9),
+          type: "BATTLE_START",
+          turn: 1,
+          message: "Battle Started!"
+        },
+        {
+          id: Math.random().toString(36).substring(2, 9),
+          type: "TURN_START",
+          turn: 1,
+          message: "Turn 1"
+        },
       ],
     };
     set({ battle });

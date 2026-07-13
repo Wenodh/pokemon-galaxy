@@ -13,7 +13,12 @@ describe("BattleEngine", () => {
     stats: { hp: 100, atk: 100, def: 100, spa: 100, spd: 100, spe: 100 },
     types: ["Normal"],
     image: "",
-    fainted: false
+    fainted: false,
+    status: "NONE",
+    statusTurns: 0,
+    ability: "",
+    item: "",
+    statChanges: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0 },
   });
 
   const createMockBattle = (): Battle => ({
@@ -24,12 +29,18 @@ describe("BattleEngine", () => {
       player: {
         team: [mockPokemon(1, "Pikachu"), mockPokemon(2, "Bulbasaur")],
         activePokemonIndex: 0,
+        hazards: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
+        fieldEffects: { reflect: 0, lightScreen: 0, auroraVeil: 0, tailwind: 0 }
       },
       opponent: {
         team: [mockPokemon(3, "Charmander")],
         activePokemonIndex: 0,
+        hazards: { stealthRock: false, spikes: 0, toxicSpikes: 0, stickyWeb: false },
+        fieldEffects: { reflect: 0, lightScreen: 0, auroraVeil: 0, tailwind: 0 }
       },
       status: "ONGOING",
+      weather: { type: "NONE", turns: 0 },
+      terrain: { type: "NONE", turns: 0 },
       attacker: "PLAYER",
       defender: "OPPONENT",
     },
@@ -41,11 +52,12 @@ describe("BattleEngine", () => {
     const defender = mockPokemon(2, "Defender");
     const move: any = { basePower: 40, type: "Normal", category: "PHYSICAL", accuracy: 100 };
     const random = new SeededRandom(12345);
+    const battle = createMockBattle();
 
-    const result = BattleEngine.calculateDamage(attacker, defender, move, random);
+    const result = BattleEngine.calculateDamage(attacker, defender, move, battle, random);
     expect(result.damage).toBeGreaterThan(0);
 
-    const result2 = BattleEngine.calculateDamage(attacker, defender, move, new SeededRandom(12345));
+    const result2 = BattleEngine.calculateDamage(attacker, defender, move, battle, new SeededRandom(12345));
     expect(result.damage).toBe(result2.damage);
   });
 

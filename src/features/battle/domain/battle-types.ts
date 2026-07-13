@@ -2,6 +2,8 @@ export type PokemonId = number;
 
 export type BattleStatus = "IDLE" | "ONGOING" | "VICTORY" | "DEFEAT";
 
+export type MajorStatus = "BURN" | "POISON" | "TOXIC" | "PARALYSIS" | "SLEEP" | "FREEZE" | "NONE";
+
 export interface BattlePokemon {
   id: PokemonId;
   name: string;
@@ -19,17 +21,51 @@ export interface BattlePokemon {
   types: string[];
   image: string;
   fainted: boolean;
+  status: MajorStatus;
+  statusTurns: number;
+  ability: string;
+  item: string;
+  statChanges: {
+    atk: number;
+    def: number;
+    spa: number;
+    spd: number;
+    spe: number;
+  };
 }
 
 export interface BattleParticipant {
   team: BattlePokemon[];
   activePokemonIndex: number;
+  hazards: {
+    stealthRock: boolean;
+    spikes: number;
+    toxicSpikes: number;
+    stickyWeb: boolean;
+  };
+  fieldEffects: {
+    reflect: number;
+    lightScreen: number;
+    auroraVeil: number;
+    tailwind: number;
+  };
 }
+
+export type WeatherType = "NONE" | "RAIN" | "SUN" | "SANDSTORM" | "SNOW";
+export type TerrainType = "NONE" | "ELECTRIC" | "GRASSY" | "MISTY" | "PSYCHIC";
 
 export interface BattleState {
   player: BattleParticipant;
   opponent: BattleParticipant;
   status: BattleStatus;
+  weather: {
+    type: WeatherType;
+    turns: number;
+  };
+  terrain: {
+    type: TerrainType;
+    turns: number;
+  };
   winner?: "PLAYER" | "OPPONENT";
   attacker?: "PLAYER" | "OPPONENT";
   defender?: "PLAYER" | "OPPONENT";
@@ -65,7 +101,17 @@ export type BattleEventType =
   | "FAINT"
   | "SWITCH"
   | "VICTORY"
-  | "MESSAGE";
+  | "MESSAGE"
+  | "STATUS_APPLIED"
+  | "WEATHER_START"
+  | "WEATHER_END"
+  | "TERRAIN_START"
+  | "TERRAIN_END"
+  | "ABILITY_TRIGGER"
+  | "ITEM_TRIGGER"
+  | "HAZARD_TRIGGER"
+  | "HEALING"
+  | "RESIDUAL_DAMAGE";
 
 export interface BattleEvent {
   id: string;
