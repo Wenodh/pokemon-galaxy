@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { analyzeTeam } from "../domain/analyzer";
 import { PokemonDetails } from "@/features/pokemon/types";
@@ -20,6 +20,7 @@ import { DuplicateTypesCard } from "./DuplicateTypesCard";
 import { AnalysisSection } from "./AnalysisSection";
 import { ChartSkeleton } from "./ChartSkeleton";
 import { AlertCircle, LayoutDashboard, BarChart3, PieChart, Activity } from "lucide-react";
+import { TeamAnalysis } from "../types/analysis.types";
 
 // Dynamic imports for charts
 const TeamRadarChart = dynamic(() => import("./TeamRadarChart").then(mod => mod.TeamRadarChart), {
@@ -46,12 +47,34 @@ const WeaknessMatrix = dynamic(() => import("./WeaknessMatrix").then(mod => mod.
 interface TeamAnalysisDashboardProps {
   pokemon: PokemonDetails[];
   isLoading?: boolean;
+  isActive?: boolean;
 }
 
-export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashboardProps) {
+export function TeamAnalysisDashboard({ pokemon, isLoading, isActive = true }: TeamAnalysisDashboardProps) {
   const { activeTeam } = useActiveTeam();
-  const analysis = useMemo(() => analyzeTeam(pokemon), [pokemon]);
-  const recommendations = useMemo(() => generateRecommendations(analysis, pokemon.length), [analysis, pokemon.length]);
+  const lastAnalysis = useRef<TeamAnalysis | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Defer heavy computation until the tab is active
+  const analysis = useMemo(() => {
+    if (!isActive && lastAnalysis.current) {
+      return lastAnalysis.current;
+    }
+
+    if (!isActive && !lastAnalysis.current) {
+      return null;
+    }
+
+    const result = analyzeTeam(pokemon);
+    lastAnalysis.current = result;
+    return result;
+  }, [pokemon, isActive]);
+
+  const recommendations = useMemo(() => {
+    if (!analysis) return [];
+    return generateRecommendations(analysis, pokemon.length);
+  }, [analysis, pokemon.length]);
+
   const suggestions = useMemo(() => {
     if (!activeTeam || !analysis || !recommendations) return [];
     try {
@@ -62,18 +85,26 @@ export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashbo
     }
   }, [activeTeam, analysis, recommendations]);
 
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
   const isPreliminary = pokemon.length < 2;
 
   const coverageSummary = useMemo(() => {
+    if (!analysis) return "";
     const coveredCount = analysis.offensiveCoverage.filter(c => c.effectiveness > 0).length;
     return `Your team hits ${coveredCount} out of 18 types super-effectively.`;
   }, [analysis]);
 
   const defensiveSummary = useMemo(() => {
+    if (!analysis) return "";
     const severeWeak = analysis.weaknesses.filter(w => w.count >= 3).length;
     if (severeWeak === 0) return "Your team has no major shared weaknesses.";
     return `Your team has ${severeWeak} significant shared weaknesses that could be exploited.`;
   }, [analysis]);
+
+  if (!isHydrated) return null;
 
   if (pokemon.length === 0 && !isLoading) {
     return (
@@ -95,15 +126,15 @@ export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashbo
     );
   }
 
+  if (!analysis) return null;
+
   return (
     <div className="space-y-16 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* 0. Recommendations & Suggestions Section */}
       <section className="space-y-12">
         <RecommendationList recommendations={recommendations} />
         <SuggestionList suggestions={suggestions} />
       </section>
 
-      {/* 1. Overview Section */}
       <section className="space-y-6">
         <div className="flex items-center gap-2 border-b pb-2">
             <Activity className="h-5 w-5 text-primary" />
@@ -119,7 +150,6 @@ export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashbo
         </div>
       </section>
 
-      {/* 2. Summary Section */}
       <section className="space-y-8">
         <div className="flex items-center gap-2 border-b pb-2">
             <PieChart className="h-5 w-5 text-primary" />
@@ -168,7 +198,6 @@ export function TeamAnalysisDashboard({ pokemon, isLoading }: TeamAnalysisDashbo
         </div>
       </section>
 
-      {/* 3. Visualizations Section */}
       <section className="space-y-10">
         <div className="flex items-center gap-2 border-b pb-2">
             <BarChart3 className="h-5 w-5 text-primary" />

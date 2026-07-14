@@ -33,6 +33,10 @@ export class PokedexRepository {
       name: pokemon.name,
       types: pokemon.pokemon_v2_pokemontypes?.map((t) => t.pokemon_v2_type.name) || [],
       image,
+      stats: pokemon.pokemon_v2_pokemonstats?.map((s) => ({
+        name: s.pokemon_v2_stat.name,
+        value: s.base_stat,
+      })),
     };
   }
 

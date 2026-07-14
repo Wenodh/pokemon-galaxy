@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { Tooltip } from "@/components/ui/tooltip";
 
 interface CoverageCardProps {
-  offensive: OffensiveCoverage[];
-  weaknesses: DefensiveRating[];
-  resistances: DefensiveRating[];
-  immunities: DefensiveRating[];
+  offensive?: OffensiveCoverage[];
+  weaknesses?: DefensiveRating[];
+  resistances?: DefensiveRating[];
+  immunities?: DefensiveRating[];
 }
 
 const ALL_TYPES = [
@@ -17,7 +17,12 @@ const ALL_TYPES = [
   "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"
 ];
 
-export function CoverageCard({ offensive, weaknesses, resistances, immunities }: CoverageCardProps) {
+export function CoverageCard({
+  offensive = [],
+  weaknesses = [],
+  resistances = [],
+  immunities = []
+}: CoverageCardProps) {
   return (
     <Card>
       <CardHeader>

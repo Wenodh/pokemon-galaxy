@@ -44,11 +44,11 @@ export const TeamSlot = ({ pokemon, onRemove, index }: TeamSlotProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border/40 bg-muted/20 p-4 transition-colors hover:border-border/60 hover:bg-muted/30"
+          className="flex h-20 sm:h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border/40 bg-muted/20 p-2 sm:p-4 transition-colors hover:border-border/60 hover:bg-muted/30"
           aria-label={`Empty team slot ${index + 1}`}
         >
           <Plus className="h-4 w-4 text-muted-foreground/40" aria-hidden="true" />
-          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+          <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
             Empty Slot
           </span>
           <span className="text-[9px] text-muted-foreground/40 hidden sm:block">
@@ -62,35 +62,35 @@ export const TeamSlot = ({ pokemon, onRemove, index }: TeamSlotProps) => {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="group relative flex h-24 items-center gap-4 rounded-xl border border-border/50 bg-card p-3 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+          className="group relative flex h-20 sm:h-24 items-center gap-3 sm:gap-4 rounded-xl border border-border/50 bg-card p-2 sm:p-3 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
         >
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-muted/50 p-2 transition-transform group-hover:scale-105">
+          <div className="relative h-12 w-12 sm:h-16 sm:w-16 shrink-0 overflow-hidden rounded-lg bg-muted/50 p-1 sm:p-2 transition-transform group-hover:scale-105">
             <Image
               src={pokemon.image}
               alt={pokemon.name}
               fill
               className="object-contain"
-              sizes="64px"
+              sizes="(max-width: 640px) 48px, 64px"
             />
           </div>
 
           <div className="flex flex-1 flex-col justify-center overflow-hidden">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-mono font-medium text-muted-foreground/70">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <span className="text-[9px] sm:text-[10px] font-mono font-medium text-muted-foreground/70">
                 #{pokemon.id.toString().padStart(3, "0")}
               </span>
-              <h4 className="truncate text-sm font-bold capitalize leading-none tracking-tight">
+              <h4 className="truncate text-xs sm:text-sm font-bold capitalize leading-none tracking-tight">
                 {pokemon.name}
               </h4>
             </div>
 
-            <div className="mt-2.5 flex flex-wrap gap-1">
+            <div className="mt-1.5 sm:mt-2.5 flex flex-wrap gap-1">
               {pokemon.types.map((type) => (
                 <Badge
                   key={type}
                   variant="secondary"
                   className={cn(
-                    "rounded-md border-none px-2 py-0 text-[9px] font-black uppercase tracking-tight text-white h-4.5",
+                    "rounded-md border-none px-1.5 sm:px-2 py-0 text-[8px] sm:text-[9px] font-black uppercase tracking-tight text-white h-4 sm:h-4.5",
                     typeColors[type.toLowerCase()] || "bg-slate-500"
                   )}
                 >
@@ -104,7 +104,7 @@ export const TeamSlot = ({ pokemon, onRemove, index }: TeamSlotProps) => {
              <Button
               variant="ghost"
               size="sm"
-              className="h-9 w-auto px-3 lg:w-9 lg:px-0 text-muted-foreground/60 hover:bg-destructive/10 hover:text-destructive transition-colors rounded-lg group/remove"
+              className="h-8 w-8 sm:h-9 sm:w-9 p-0 text-muted-foreground/60 hover:bg-destructive/10 hover:text-destructive transition-colors rounded-lg group/remove"
               onClick={(e) => {
                 e.stopPropagation();
                 onRemove?.();
@@ -112,8 +112,7 @@ export const TeamSlot = ({ pokemon, onRemove, index }: TeamSlotProps) => {
               title="Remove from team"
               aria-label={`Remove ${pokemon.name} from team`}
             >
-              <Trash2 className="h-4.5 w-4.5" />
-              <span className="ml-2 text-[10px] font-black uppercase tracking-widest lg:hidden">Remove</span>
+              <Trash2 className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
             </Button>
           </div>
         </motion.div>

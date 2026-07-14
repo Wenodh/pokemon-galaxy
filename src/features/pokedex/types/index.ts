@@ -8,11 +8,19 @@ export interface PokemonSprites {
   sprites: string | Record<string, unknown>;
 }
 
+export interface PokemonStat {
+  base_stat: number;
+  pokemon_v2_stat: {
+    name: string;
+  };
+}
+
 export interface Pokemon {
   id: number;
   name: string;
   pokemon_v2_pokemontypes: PokemonType[];
   pokemon_v2_pokemonsprites: PokemonSprites[];
+  pokemon_v2_pokemonstats?: PokemonStat[];
 }
 
 export interface PokemonListResponse {
@@ -24,6 +32,10 @@ export interface PokemonListItem {
   name: string;
   types: string[];
   image: string;
+  stats?: {
+    name: string;
+    value: number;
+  }[];
 }
 
 export interface PokedexFilters {

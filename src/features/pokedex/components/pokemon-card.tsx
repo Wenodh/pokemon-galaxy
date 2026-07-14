@@ -11,7 +11,7 @@ import { PokemonListItem } from "../types";
 import { CardDensity } from "@/store/user-preferences-store";
 import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
 import { CollectionBadges } from "@/features/collection/components/collection-badges";
-import { Plus, MoreHorizontal } from "lucide-react";
+import { Plus, Check, MoreHorizontal } from "lucide-react";
 import { useActiveTeam } from "@/features/team/hooks/useActiveTeam";
 import { useTeams } from "@/features/team/hooks/useTeams";
 import { toast } from "sonner";
@@ -62,6 +62,8 @@ export function PokemonCard({
   const { activeTeam, addPokemon } = useActiveTeam();
   const { teams } = useTeams();
 
+  const isAlreadyInActiveTeam = activeTeam?.pokemon?.includes(pokemon.id) || false;
+
   const handleAddToActiveTeam = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
@@ -69,6 +71,10 @@ export function PokemonCard({
     if (!activeTeam) {
       toast.error("Please select an active team first.");
       return;
+    }
+
+    if (isAlreadyInActiveTeam) {
+        return;
     }
 
     const result = addPokemon(activeTeam.id, pokemon.id);
@@ -196,13 +202,26 @@ export function PokemonCard({
               {mode === "team-builder" && (
                 <Button
                   size="sm"
-                  variant="default"
-                  className="h-7 px-3 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm hover:scale-105 active:scale-95 transition-transform"
+                  variant={isAlreadyInActiveTeam ? "secondary" : "default"}
+                  disabled={isAlreadyInActiveTeam}
+                  className={cn(
+                    "h-7 px-3 text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm transition-all",
+                    !isAlreadyInActiveTeam && "hover:scale-105 active:scale-95"
+                  )}
                   onClick={handleAddToActiveTeam}
-                  aria-label={`Add ${pokemon.name} to active team`}
+                  aria-label={isAlreadyInActiveTeam ? `${pokemon.name} already in team` : `Add ${pokemon.name} to active team`}
                 >
-                  <Plus className="mr-1 h-3 w-3" />
-                  Add
+                  {isAlreadyInActiveTeam ? (
+                    <>
+                        <Check className="mr-1 h-3 w-3" />
+                        Added
+                    </>
+                  ) : (
+                    <>
+                        <Plus className="mr-1 h-3 w-3" />
+                        Add
+                    </>
+                  )}
                 </Button>
               )}
               <CollectionBadges pokemonId={pokemon.id} size="sm" />
