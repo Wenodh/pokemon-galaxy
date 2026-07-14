@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -11,9 +13,10 @@ import { PokemonListItem } from "../types";
 import { CardDensity } from "@/store/user-preferences-store";
 import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
 import { CollectionBadges } from "@/features/collection/components/collection-badges";
-import { Plus, Check, MoreHorizontal } from "lucide-react";
+import { Plus, Check, MoreHorizontal, FolderPlus } from "lucide-react";
 import { useActiveTeam } from "@/features/team/hooks/useActiveTeam";
 import { useTeams } from "@/features/team/hooks/useTeams";
+import { AddToCollectionDialog } from "@/features/collections/components/AddToCollectionDialog";
 import { toast } from "sonner";
 import {
   DropdownMenu,
@@ -62,7 +65,15 @@ export function PokemonCard({
   const { activeTeam, addPokemon } = useActiveTeam();
   const { teams } = useTeams();
 
+  const [isCollectionDialogOpen, setIsCollectionDialogOpen] = useState(false);
+
   const isAlreadyInActiveTeam = activeTeam?.pokemon?.includes(pokemon.id) || false;
+
+  const handleAddToCollectionClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setIsCollectionDialogOpen(true);
+  };
 
   const handleAddToActiveTeam = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -155,27 +166,31 @@ export function PokemonCard({
             variant="ghost"
           />
 
-          {mode === "pokedex" && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="h-8 w-8 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-border/50"
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label={`Options for ${pokemon.name}`}
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="h-8 w-8 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity shadow-sm border border-border/50"
+                onClick={(e) => e.stopPropagation()}
+                aria-label={`Options for ${pokemon.name}`}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {mode === "pokedex" && (
                 <DropdownMenuItem onClick={handleAddToTeamClick} className="py-2.5 font-bold cursor-pointer">
                   <Plus className="mr-2 h-4 w-4 text-primary" />
                   <span>Add to Team</span>
                 </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+              )}
+              <DropdownMenuItem onClick={handleAddToCollectionClick} className="py-2.5 font-bold cursor-pointer">
+                <FolderPlus className="mr-2 h-4 w-4 text-primary" />
+                <span>Add to Collection</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className={cn("relative aspect-square overflow-hidden", isCompact ? "p-4" : "p-8")}>
@@ -253,6 +268,15 @@ export function PokemonCard({
             )}
           </div>
         </Card>
+
+        {isCollectionDialogOpen && (
+          <AddToCollectionDialog
+            pokemonId={pokemon.id}
+            pokemonName={pokemon.name}
+            open={isCollectionDialogOpen}
+            onOpenChange={setIsCollectionDialogOpen}
+          />
+        )}
     </motion.div>
   );
 }

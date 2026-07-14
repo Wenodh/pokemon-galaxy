@@ -10,7 +10,7 @@ import { ThemeToggle } from "./theme-toggle";
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Pokedex", href: "/pokedex" },
-  { name: "Collection", href: "/collection", icon: Briefcase },
+  { name: "Collections", href: "/collections", icon: Briefcase },
   { name: "Favorites", href: "/favorites", icon: Heart },
   { name: "Recent", href: "/recent", icon: History },
   { name: "Team Builder", href: "/team-builder" },
