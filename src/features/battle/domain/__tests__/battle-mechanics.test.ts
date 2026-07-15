@@ -127,8 +127,8 @@ describe("BattleEngine Advanced Mechanics", () => {
         opponent: { team: [{ stats: { spe: 50 }, statChanges: { spe: 0 }, status: "NONE" }], activePokemonIndex: 0 }
       }
     };
-    const pAction = { type: "ATTACK" as const, payload: { priority: 0 } };
-    const oAction = { type: "ATTACK" as const, payload: { priority: 0 } };
+    const pAction = { type: "ATTACK" as const, payload: { priority: 0 } } as any;
+    const oAction = { type: "ATTACK" as const, payload: { priority: 0 } } as any;
 
     const order = BattleEngine.getTurnOrder(battle, pAction, oAction);
     expect(order[0]).toBe("PLAYER");
@@ -141,8 +141,8 @@ describe("BattleEngine Advanced Mechanics", () => {
         opponent: { team: [{ stats: { spe: 200 }, statChanges: { spe: 0 }, status: "NONE" }], activePokemonIndex: 0 }
       }
     };
-    const pAction = { type: "ATTACK" as const, payload: { priority: 1 } };
-    const oAction = { type: "ATTACK" as const, payload: { priority: 0 } };
+    const pAction = { type: "ATTACK" as const, payload: { priority: 1 } } as any;
+    const oAction = { type: "ATTACK" as const, payload: { priority: 0 } } as any;
 
     const order = BattleEngine.getTurnOrder(battle, pAction, oAction);
     expect(order[0]).toBe("PLAYER");

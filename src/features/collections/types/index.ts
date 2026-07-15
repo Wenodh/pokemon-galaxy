@@ -79,8 +79,8 @@ export interface LivingDexState {
 }
 
 export interface LivingDexActions {
-  markSeen: (pokemonId: PokemonId, seen?: boolean) => void;
-  markCaught: (pokemonId: PokemonId, caught?: boolean) => void;
+  markSeen: (pokemonId: PokemonId, seen?: boolean, name?: string) => void;
+  markCaught: (pokemonId: PokemonId, caught?: boolean, name?: string) => void;
   bulkMarkSeen: (pokemonIds: PokemonId[], seen?: boolean) => void;
   bulkMarkCaught: (pokemonIds: PokemonId[], caught?: boolean) => void;
   clearLivingDex: () => void;

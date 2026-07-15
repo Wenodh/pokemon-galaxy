@@ -44,6 +44,14 @@ export const useCollectionsStore = create<CollectionsStore>()(
           collectionOrder: [...state.collectionOrder, newCollection.id],
         }));
 
+        import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
+          TrainerEventService.emit({
+            type: "COLLECTION_CREATED",
+            name: validation.value,
+            collectionId: newCollection.id,
+          });
+        });
+
         return { ok: true, value: newCollection.id };
       },
 
@@ -363,6 +371,14 @@ export const useCollectionsStore = create<CollectionsStore>()(
 
         try {
           const json = JSON.stringify(payload, null, 2);
+
+          import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
+            TrainerEventService.emit({
+              type: "COLLECTION_EXPORTED",
+              name: collection.name,
+            });
+          });
+
           return { ok: true, value: json };
         } catch (e) {
           return { ok: false, error: "EXPORT_FAILED" };
@@ -400,6 +416,13 @@ export const useCollectionsStore = create<CollectionsStore>()(
             collections: { ...state.collections, [newCollection.id]: newCollection },
             collectionOrder: [...state.collectionOrder, newCollection.id],
           }));
+
+          import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
+            TrainerEventService.emit({
+              type: "COLLECTION_IMPORTED",
+              name: validatedName,
+            });
+          });
 
           return { ok: true, value: newCollection.id };
         } catch (e) {

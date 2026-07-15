@@ -6,6 +6,7 @@ import { PokemonViewTracker } from "@/features/recently-viewed/components/pokemo
 import { CollectionControls } from "@/features/collection/components/collection-controls";
 import { PokemonDetailsCollectionManager } from "@/features/collections/components/PokemonDetailsCollectionManager";
 import { Container } from "@/components/common/container";
+import { TrackViewedPokemon } from "@/features/trainer/components/TrackViewedPokemon";
 
 interface PokemonPageProps { params: Promise<{ name: string }>; }
 
@@ -30,6 +31,7 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
   return (
     <div className="min-h-screen pb-20">
       <PokemonViewTracker pokemonId={pokemon.id} />
+      <TrackViewedPokemon id={pokemon.id} name={pokemon.name} />
       <PokemonHero name={pokemon.name} id={pokemon.id} image={pokemon.image} types={pokemon.types} genus={pokemon.genus} generation={pokemon.generation} height={pokemon.height} weight={pokemon.weight} />
       <Container>
         <div className="mt-8 flex flex-col gap-8 lg:mt-12">

@@ -66,7 +66,7 @@ export interface TeamState {
 }
 
 export interface TeamActions {
-  createTeam: (name: string) => Result<string>;
+  createTeam: (name: string, isImport?: boolean) => Result<string>;
   deleteTeam: (id: string) => void;
   renameTeam: (id: string, newName: string) => Result;
   duplicateTeam: (id: string) => Result<string>;

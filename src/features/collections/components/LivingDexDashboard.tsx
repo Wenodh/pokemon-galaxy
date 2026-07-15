@@ -574,7 +574,7 @@ export function LivingDexDashboard() {
                             }`}
                             onClick={(e) => {
                               e.preventDefault();
-                              markSeen(p.id, !entry.seen);
+                              markSeen(p.id, !entry.seen, p.name);
                               toast.success(!entry.seen ? `Marked ${capitalize(p.name)} as Seen.` : `Removed Seen status.`);
                             }}
                             title="Seen Status"
@@ -590,7 +590,7 @@ export function LivingDexDashboard() {
                             }`}
                             onClick={(e) => {
                               e.preventDefault();
-                              markCaught(p.id, !entry.caught);
+                              markCaught(p.id, !entry.caught, p.name);
                               toast.success(!entry.caught ? `Marked ${capitalize(p.name)} as Caught.` : `Removed Caught status.`);
                             }}
                             title="Caught Status"

@@ -3,13 +3,14 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Rocket, Heart, History, Briefcase, Sparkles } from "lucide-react";
+import { Menu, X, Rocket, Heart, History, Briefcase, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
 
 const navigation = [
   { name: "Home", href: "/" },
   { name: "Pokedex", href: "/pokedex" },
+  { name: "Trainer", href: "/trainer", icon: User },
   { name: "Collections", href: "/collections", icon: Briefcase },
   { name: "Living Dex", href: "/living-dex", icon: Sparkles },
   { name: "Favorites", href: "/favorites", icon: Heart },

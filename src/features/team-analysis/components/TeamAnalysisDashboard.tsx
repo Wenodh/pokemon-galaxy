@@ -85,6 +85,25 @@ export function TeamAnalysisDashboard({ pokemon, isLoading, isActive = true }: T
     }
   }, [activeTeam, analysis, recommendations]);
 
+  const hasEmittedForActiveSession = useRef(false);
+
+  useEffect(() => {
+    if (!isActive) {
+      hasEmittedForActiveSession.current = false;
+    } else if (isActive && analysis && activeTeam && pokemon.length > 0 && !hasEmittedForActiveSession.current) {
+      hasEmittedForActiveSession.current = true;
+      import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
+        TrainerEventService.emit({
+          type: "TEAM_ANALYZED",
+          name: activeTeam.name,
+          score: analysis.overallScore,
+        });
+      }).catch((err) => {
+        console.error("TrainerEventService TEAM_ANALYZED emit failed silently", err);
+      });
+    }
+  }, [isActive, analysis, activeTeam, pokemon]);
+
   useEffect(() => {
     setIsHydrated(true);
   }, []);
