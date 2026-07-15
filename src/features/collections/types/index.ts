@@ -73,6 +73,8 @@ export interface LivingDexEntry {
 
 export interface LivingDexState {
   entries: Record<PokemonId, LivingDexEntry>;
+  currentStreak?: number;
+  longestStreak?: number;
   version: number;
 }
 

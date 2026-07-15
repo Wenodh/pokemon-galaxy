@@ -8,6 +8,8 @@ const livingDexPersistOptions: PersistOptions<LivingDexStore, any> = {
   version: LIVING_DEX_STORE_VERSION,
   partialize: (state) => ({
     entries: state.entries,
+    currentStreak: state.currentStreak,
+    longestStreak: state.longestStreak,
     version: state.version,
   }),
 };
@@ -23,6 +25,8 @@ export const useLivingDexStore = create<LivingDexStore>()(
     (set) => ({
       // State
       entries: {},
+      currentStreak: undefined, // future-ready placeholder
+      longestStreak: undefined, // future-ready placeholder
       version: LIVING_DEX_STORE_VERSION,
 
       // Actions
@@ -128,7 +132,7 @@ export const useLivingDexStore = create<LivingDexStore>()(
         });
       },
 
-      clearLivingDex: () => set({ entries: {} }),
+      clearLivingDex: () => set({ entries: {}, currentStreak: undefined, longestStreak: undefined }),
     }),
     livingDexPersistOptions
   )
