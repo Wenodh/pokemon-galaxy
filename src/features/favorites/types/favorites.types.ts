@@ -1,6 +1,7 @@
 export interface FavoritesState {
   favorites: number[];
   version: number;
+  updatedAt: number;
 }
 
 export interface FavoritesActions {

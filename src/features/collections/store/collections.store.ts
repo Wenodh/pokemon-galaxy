@@ -3,6 +3,7 @@ import { persist, PersistOptions } from "zustand/middleware";
 import { CollectionsStore, Collection } from "../types";
 import { COLLECTIONS_STORAGE_KEY, COLLECTIONS_STORE_VERSION } from "../constants";
 import { validateCollectionName, generateUniqueCollectionCopyName } from "../utils/validation";
+import { useSyncQueueStore } from "../../cloud-sync/store/sync-queue.store";
 
 const collectionsPersistOptions: PersistOptions<CollectionsStore, any> = {
   name: COLLECTIONS_STORAGE_KEY,
@@ -21,6 +22,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
       collections: {},
       collectionOrder: [],
       version: COLLECTIONS_STORE_VERSION,
+      updatedAt: Date.now(),
 
       // Actions
       createCollection: (name, description = "", color, icon) => {
@@ -42,7 +44,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
         set((state) => ({
           collections: { ...state.collections, [newCollection.id]: newCollection },
           collectionOrder: [...state.collectionOrder, newCollection.id],
+          updatedAt: Date.now(),
         }));
+
+        useSyncQueueStore.getState().addOperation("collections", "PUSH");
 
         import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
           TrainerEventService.emit({
@@ -72,6 +77,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
               updatedAt: Date.now(),
             },
           },
+          updatedAt: Date.now(),
         }));
 
         return { ok: true, value: undefined };
@@ -139,6 +145,7 @@ export const useCollectionsStore = create<CollectionsStore>()(
           return {
             collections: remaining,
             collectionOrder: newOrder,
+            updatedAt: Date.now(),
           };
         });
       },
@@ -180,7 +187,10 @@ export const useCollectionsStore = create<CollectionsStore>()(
         const [removed] = order.splice(startIndex, 1);
         order.splice(endIndex, 0, removed);
 
-        set({ collectionOrder: order });
+        set({
+          collectionOrder: order,
+          updatedAt: Date.now(),
+        });
       },
 
       addPokemonToCollection: (collectionId, pokemonId) => {

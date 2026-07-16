@@ -10,6 +10,7 @@ export const teamPersistOptions: PersistOptions<TeamStore, TeamState> = {
     teamOrder: state.teamOrder,
     activeTeamId: state.activeTeamId,
     version: state.version,
+    updatedAt: state.updatedAt,
   }),
   migrate: (persistedState: unknown, version: number) => {
     if (version < TEAM_STORE_VERSION) {

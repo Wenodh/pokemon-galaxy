@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { SavedView, SavedViewStoreState, SavedViewActions } from "../types/saved-view.types";
+import { useSyncQueueStore } from "../../cloud-sync/store/sync-queue.store";
 
 const MAX_NAME_LENGTH = 40;
 
@@ -12,6 +13,7 @@ export const useSavedViewStore = create<SavedViewStore>()(
       views: {},
       viewIds: [],
       activeViewId: null,
+      updatedAt: Date.now(),
 
       saveView: (viewData) => {
         const name = viewData.name.trim();
@@ -55,7 +57,10 @@ export const useSavedViewStore = create<SavedViewStore>()(
           },
           viewIds: state.views[id] ? state.viewIds : [...state.viewIds, id],
           activeViewId: id,
+          updatedAt: now,
         }));
+
+        useSyncQueueStore.getState().addOperation("saved-views", "PUSH");
 
         return { success: true };
       },
@@ -67,6 +72,7 @@ export const useSavedViewStore = create<SavedViewStore>()(
             views: remainingViews,
             viewIds: state.viewIds.filter((viewId) => viewId !== id),
             activeViewId: state.activeViewId === id ? null : state.activeViewId,
+            updatedAt: Date.now(),
           };
         });
       },

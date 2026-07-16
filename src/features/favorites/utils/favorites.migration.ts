@@ -17,5 +17,6 @@ export const migrateFavoritesState = (persistedState: unknown, version: number):
   return {
     favorites: validateFavorites(state.favorites || []),
     version: state.version || 1,
+    updatedAt: state.updatedAt || Date.now(),
   };
 };

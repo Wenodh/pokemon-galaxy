@@ -3,6 +3,8 @@
 import { ReactNode } from "react";
 import { ThemeProvider } from "./theme-provider";
 import { QueryProvider } from "./query-provider";
+import { AuthProvider } from "@/features/cloud-sync/components/auth-provider";
+import { SyncQueueProcessor } from "@/features/cloud-sync/components/sync-queue-processor";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { ErrorMessage } from "@/components/common/error-message";
 
@@ -28,14 +30,19 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 export function RootProvider({ children }: RootProviderProps) {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <QueryProvider>{children}</QueryProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProvider>
+            {children}
+            <SyncQueueProcessor />
+          </QueryProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

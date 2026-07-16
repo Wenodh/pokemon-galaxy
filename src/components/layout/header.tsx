@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X, Rocket, Heart, History, Briefcase, Sparkles, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "./theme-toggle";
+import { SyncStatusIndicator } from "@/features/cloud-sync/components/sync-status-indicator";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -57,6 +58,9 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
+          <div className="hidden lg:flex">
+            <SyncStatusIndicator />
+          </div>
           <div className="hidden md:flex">
             <ThemeToggle />
           </div>

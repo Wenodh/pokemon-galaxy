@@ -12,5 +12,6 @@ export const favoritesPersistOptions: PersistOptions<FavoritesStore, FavoritesSt
   partialize: (state) => ({
     favorites: state.favorites,
     version: state.version,
+    updatedAt: state.updatedAt,
   }),
 };

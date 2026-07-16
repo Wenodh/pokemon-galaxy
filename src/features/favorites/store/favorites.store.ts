@@ -4,6 +4,7 @@ import { FavoritesStore } from "../types/favorites.types";
 import { favoritesPersistOptions } from "./favorites.persist";
 import { isValidPokemonId } from "../utils/favorites.validation";
 import { FAVORITES_STORE_VERSION } from "../constants/favorites.constants";
+import { useSyncQueueStore } from "../../cloud-sync/store/sync-queue.store";
 
 export const useFavoritesStore = create<FavoritesStore>()(
   persist(
@@ -11,6 +12,7 @@ export const useFavoritesStore = create<FavoritesStore>()(
       // State
       favorites: [],
       version: FAVORITES_STORE_VERSION,
+      updatedAt: Date.now(),
 
       // Actions
       addFavorite: (id, name) => {
@@ -20,10 +22,14 @@ export const useFavoritesStore = create<FavoritesStore>()(
         set((state) => {
           if (state.favorites.includes(id)) return state;
           isNewFav = true;
-          return { favorites: [...state.favorites, id] };
+          return {
+            favorites: [...state.favorites, id],
+            updatedAt: Date.now(),
+          };
         });
 
         if (isNewFav) {
+          useSyncQueueStore.getState().addOperation("favorites", "PUSH");
           import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
             TrainerEventService.emit({
               type: "FAVORITE_ADDED",
@@ -45,10 +51,12 @@ export const useFavoritesStore = create<FavoritesStore>()(
           isRemoved = true;
           return {
             favorites: state.favorites.filter((favId) => favId !== id),
+            updatedAt: Date.now(),
           };
         });
 
         if (isRemoved) {
+          useSyncQueueStore.getState().addOperation("favorites", "PUSH");
           import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
             TrainerEventService.emit({
               type: "FAVORITE_REMOVED",
@@ -77,7 +85,11 @@ export const useFavoritesStore = create<FavoritesStore>()(
         return get().favorites.includes(id);
       },
 
-      clearFavorites: () => set({ favorites: [] }),
+      clearFavorites: () =>
+        set({
+          favorites: [],
+          updatedAt: Date.now(),
+        }),
 
       getFavoriteCount: () => get().favorites.length,
 
