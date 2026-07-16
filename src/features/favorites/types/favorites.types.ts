@@ -4,9 +4,9 @@ export interface FavoritesState {
 }
 
 export interface FavoritesActions {
-  addFavorite: (id: number) => void;
-  removeFavorite: (id: number) => void;
-  toggleFavorite: (id: number) => void;
+  addFavorite: (id: number, name?: string) => void;
+  removeFavorite: (id: number, name?: string) => void;
+  toggleFavorite: (id: number, name?: string) => void;
   clearFavorites: () => void;
   isFavorite: (id: number) => boolean;
   getFavoriteCount: () => number;

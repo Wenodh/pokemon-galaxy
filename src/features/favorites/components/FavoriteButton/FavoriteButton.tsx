@@ -45,7 +45,7 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     e.preventDefault();
     e.stopPropagation();
     if (!isLoading && !disabled) {
-      toggle(pokemonId);
+      toggle(pokemonId, pokemonName);
     }
   };
 

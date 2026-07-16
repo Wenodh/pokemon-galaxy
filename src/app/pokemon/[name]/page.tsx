@@ -4,7 +4,9 @@ import { PokemonRepository } from "@/features/pokemon/services/pokemon-repositor
 import { PokemonHero, PokemonStats, PokemonAbilities, EvolutionChain, TypeEffectiveness, MoveList, RelatedPokemon } from "@/features/pokemon";
 import { PokemonViewTracker } from "@/features/recently-viewed/components/pokemon-view-tracker";
 import { CollectionControls } from "@/features/collection/components/collection-controls";
+import { PokemonDetailsCollectionManager } from "@/features/collections/components/PokemonDetailsCollectionManager";
 import { Container } from "@/components/common/container";
+import { TrackViewedPokemon } from "@/features/trainer/components/TrackViewedPokemon";
 
 interface PokemonPageProps { params: Promise<{ name: string }>; }
 
@@ -29,11 +31,15 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
   return (
     <div className="min-h-screen pb-20">
       <PokemonViewTracker pokemonId={pokemon.id} />
+      <TrackViewedPokemon id={pokemon.id} name={pokemon.name} />
       <PokemonHero name={pokemon.name} id={pokemon.id} image={pokemon.image} types={pokemon.types} genus={pokemon.genus} generation={pokemon.generation} height={pokemon.height} weight={pokemon.weight} />
       <Container>
         <div className="mt-8 flex flex-col gap-8 lg:mt-12">
           <section className="rounded-2xl border border-border/50 bg-card/30 p-6 backdrop-blur-sm md:p-8">
-            <CollectionControls pokemonId={pokemon.id} />
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              <CollectionControls pokemonId={pokemon.id} />
+              <PokemonDetailsCollectionManager pokemonId={pokemon.id} pokemonName={pokemon.name} />
+            </div>
           </section>
           <section className="mx-auto max-w-3xl text-center"><p className="text-lg font-medium italic leading-relaxed text-muted-foreground md:text-xl">&quot;{pokemon.flavorText}&quot;</p></section>
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">

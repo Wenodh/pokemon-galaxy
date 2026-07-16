@@ -66,7 +66,7 @@ describe("BattleEngine Advanced Integration", () => {
     const attack = {
         type: "ATTACK" as const,
         payload: { moveName: "Tackle", basePower: 40, type: "Normal", category: "PHYSICAL", accuracy: 100, priority: 0 }
-    };
+    } as any;
     const skip = { type: "SKIP" as const };
 
     const result = BattleEngine.resolveTurn(battle, attack, skip);
@@ -131,7 +131,7 @@ describe("BattleEngine Advanced Integration", () => {
     const attack = {
         type: "ATTACK" as const,
         payload: { moveName: "Tackle", basePower: 40, type: "Normal", category: "PHYSICAL", accuracy: 100, priority: 0 }
-    };
+    } as any;
     const skip = { type: "SKIP" as const };
 
     const result = BattleEngine.resolveTurn(battle, attack, skip);

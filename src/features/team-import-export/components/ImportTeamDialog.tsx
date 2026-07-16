@@ -93,7 +93,7 @@ export function ImportTeamDialog({ open, onOpenChange }: ImportTeamDialogProps) 
         finalName = `${baseName} (Imported${counter > 1 ? ` ${counter}` : ""})`;
     }
 
-    const createResult = createTeam(finalName);
+    const createResult = createTeam(finalName, true);
 
     if (createResult.ok) {
         const teamId = createResult.value;

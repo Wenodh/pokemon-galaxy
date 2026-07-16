@@ -61,7 +61,7 @@ describe("FavoriteButton", () => {
     const button = screen.getByRole("button");
     fireEvent.click(button);
 
-    expect(mockToggle).toHaveBeenCalledWith(25);
+    expect(mockToggle).toHaveBeenCalledWith(25, "Pikachu");
   });
 
   it("shows loading state and is disabled", () => {

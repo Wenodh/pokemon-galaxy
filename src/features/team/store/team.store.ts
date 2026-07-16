@@ -19,7 +19,7 @@ export const useTeamStore = create<TeamStore>()(
       version: TEAM_STORE_VERSION,
 
       // Actions
-      createTeam: (name) => {
+      createTeam: (name, isImport = false) => {
         const validation = validateTeamName(name, Object.values(get().teams));
         if (!validation.ok) return validation;
 
@@ -37,6 +37,16 @@ export const useTeamStore = create<TeamStore>()(
           teamOrder: [...state.teamOrder, newTeam.id],
           activeTeamId: state.activeTeamId ?? newTeam.id,
         }));
+
+        import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
+          TrainerEventService.emit({
+            type: isImport ? "TEAM_IMPORTED" : "TEAM_CREATED",
+            name: validation.value,
+            teamId: newTeam.id,
+          });
+        }).catch((err) => {
+          console.error("TrainerEventService createTeam emit failed silently", err);
+        });
 
         return { ok: true, value: newTeam.id };
       },
@@ -98,6 +108,16 @@ export const useTeamStore = create<TeamStore>()(
           teams: { ...state.teams, [newTeam.id]: newTeam },
           teamOrder: [...state.teamOrder, newTeam.id],
         }));
+
+        import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
+          TrainerEventService.emit({
+            type: "TEAM_DUPLICATED",
+            name: newName,
+            teamId: newTeam.id,
+          });
+        }).catch((err) => {
+          console.error("TrainerEventService duplicateTeam emit failed silently", err);
+        });
 
         return { ok: true, value: newTeam.id };
       },
