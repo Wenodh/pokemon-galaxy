@@ -9,8 +9,7 @@ import { ErrorMessage } from "@/components/common/error-message";
 import { EmptyState } from "@/components/common/empty-state";
 import { Button } from "@/components/ui/button";
 import { SearchX } from "lucide-react";
-import { PokemonGrid } from "@/features/pokedex/components/pokemon-grid";
-import { PokemonCard } from "@/features/pokedex/components/pokemon-card";
+import { VirtualizedPokemonGrid } from "@/features/pokedex/components/virtualized-pokemon-grid";
 import { PokemonSearch } from "@/features/pokedex/components/pokemon-search";
 import { AddToTeamDialog } from "@/features/team/components/AddToTeamDialog";
 import { PokemonListItem } from "@/features/pokedex/types";
@@ -104,16 +103,11 @@ function PokedexContent() {
         </EmptyState>
       ) : (
         <>
-          <PokemonGrid density={cardDensity}>
-            {allPokemon.map((pokemon, index) => (
-              <PokemonCard
-                key={`${pokemon.id}-${index}`}
-                pokemon={pokemon}
-                density={cardDensity}
-                onAddToOtherTeam={handleAddToOtherTeam}
-              />
-            ))}
-          </PokemonGrid>
+          <VirtualizedPokemonGrid
+            pokemon={allPokemon}
+            density={cardDensity}
+            onAddToOtherTeam={handleAddToOtherTeam}
+          />
           <InfiniteLoader
             onLoadMore={fetchNextPage}
             hasNextPage={!!hasNextPage}

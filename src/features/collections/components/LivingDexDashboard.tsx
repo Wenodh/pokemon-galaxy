@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useLivingDexStore } from "../store/living-dex.store";
+import { useLivingDexActions } from "../hooks/use-living-dex-actions";
 import { GENERATIONS, legendaryIds, mythicalIds } from "../constants";
 import { REGIONAL_DEXES } from "../constants/regional-dex";
 import { calculateProgressStats } from "../utils/statistics";
@@ -12,13 +13,12 @@ import { Input } from "@/components/ui/input";
 import { usePokemonList } from "@/features/pokedex/hooks/use-pokemon-list";
 import { useCollectionPokemon } from "@/features/collection/hooks/use-collection-pokemon";
 import { PokemonSkeletonGrid } from "@/features/pokedex/components/pokemon-skeleton";
-import { InfiniteLoader } from "@/features/pokedex/components/infinite-loader";
+import { VirtualizedPokemonGrid } from "@/features/pokedex/components/virtualized-pokemon-grid";
 import { EmptyState } from "@/components/common/empty-state";
 import { toast } from "sonner";
 import {
   Search,
   Eye,
-  CheckCircle2,
   Filter,
   Clock,
 } from "lucide-react";
@@ -27,9 +27,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export function LivingDexDashboard() {
   const entries = useLivingDexStore((state) => state.entries);
-  const markSeen = useLivingDexStore((state) => state.markSeen);
-  const markCaught = useLivingDexStore((state) => state.markCaught);
-  const clearLivingDex = useLivingDexStore((state) => state.clearLivingDex);
+  const { clearLivingDex } = useLivingDexActions();
 
   const [activeTab, setActiveTab] = React.useState("overview");
   const [selectedDexId, setSelectedDexId] = React.useState("national");
@@ -225,8 +223,6 @@ export function LivingDexDashboard() {
       toast.success("Marked all Pokémon as Caught/Collected.");
     }
   };
-
-  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
   return (
     <div className="space-y-6">
@@ -508,108 +504,22 @@ export function LivingDexDashboard() {
             />
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {filteredAndSortedPokemon.map((p) => {
-                  const entry = entries[p.id] || { seen: false, caught: false };
+              <VirtualizedPokemonGrid
+                pokemon={filteredAndSortedPokemon}
+                density="compact"
+                className="h-[600px]"
+              />
 
-                  let cardClass = "border border-border/50 bg-card/50 transition-all";
-                  let imageClass = "h-12 w-12 object-contain drop-shadow transition-all";
-                  let badge = null;
-
-                  if (entry.caught) {
-                    cardClass = "border-2 border-green-500/40 bg-green-500/5 shadow-sm";
-                    imageClass += " opacity-100";
-                    badge = (
-                      <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-green-500 text-white rounded-full">
-                        Caught
-                      </span>
-                    );
-                  } else if (entry.seen) {
-                    cardClass = "border border-blue-500/30 bg-blue-500/5 shadow-sm opacity-90";
-                    imageClass += " opacity-85";
-                    badge = (
-                      <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-blue-500 text-white rounded-full">
-                        Seen
-                      </span>
-                    );
-                  } else {
-                    cardClass = "opacity-50 border border-border/20 bg-background";
-                    imageClass += " grayscale opacity-40";
-                    badge = (
-                      <span className="px-2 py-0.5 text-[9px] font-black uppercase bg-muted text-muted-foreground rounded-full border border-border/50">
-                        Unseen
-                      </span>
-                    );
-                  }
-
-                  return (
-                    <Card key={p.id} className={cardClass}>
-                      <div className="p-3 flex items-center justify-between gap-3 relative">
-                        {/* Direct Details navigation anchor overlay */}
-                        <Link href={`/pokemon/${p.name}`} className="absolute inset-0 z-0 cursor-pointer" />
-
-                        <div className="flex items-center gap-3 min-w-0 relative z-10 pointer-events-none">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.id}.png`}
-                            alt=""
-                            className={imageClass}
-                          />
-                          <div className="min-w-0">
-                            <span className="text-[10px] font-mono font-bold text-muted-foreground/60">
-                              #{p.id.toString().padStart(4, "0")}
-                            </span>
-                            <h5 className="text-xs font-black capitalize truncate">{p.name}</h5>
-                            <div className="mt-1 flex items-center gap-1.5">{badge}</div>
-                          </div>
-                        </div>
-
-                        {/* Interactive toggle actions inside card */}
-                        <div className="flex items-center gap-1.5 relative z-10 flex-shrink-0">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={`h-8 w-8 rounded-full ${
-                              entry.seen ? "text-blue-500 bg-blue-500/10" : "text-muted-foreground/30 hover:bg-muted"
-                            }`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              markSeen(p.id, !entry.seen, p.name);
-                              toast.success(!entry.seen ? `Marked ${capitalize(p.name)} as Seen.` : `Removed Seen status.`);
-                            }}
-                            title="Seen Status"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={`h-8 w-8 rounded-full ${
-                              entry.caught ? "text-green-500 bg-green-500/10" : "text-muted-foreground/30 hover:bg-muted"
-                            }`}
-                            onClick={(e) => {
-                              e.preventDefault();
-                              markCaught(p.id, !entry.caught, p.name);
-                              toast.success(!entry.caught ? `Marked ${capitalize(p.name)} as Caught.` : `Removed Caught status.`);
-                            }}
-                            title="Caught Status"
-                          >
-                            <CheckCircle2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-
-              {isNational && (
-                <InfiniteLoader
-                  onLoadMore={fetchNextPage}
-                  hasNextPage={!!hasNextPage}
-                  isFetchingNextPage={isFetchingNextPage}
-                />
+              {isNational && hasNextPage && (
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                  >
+                    {isFetchingNextPage ? "Loading more..." : "Load More"}
+                  </Button>
+                </div>
               )}
             </>
           )}

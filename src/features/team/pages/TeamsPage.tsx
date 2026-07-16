@@ -11,8 +11,7 @@ import { DeleteTeamDialog } from "../components/DeleteTeamDialog";
 import { TeamSelector } from "../components/TeamSelector";
 import { TeamComposition } from "../components/TeamComposition";
 import { PokemonSearch } from "@/features/pokedex/components/pokemon-search";
-import { PokemonGrid } from "@/features/pokedex/components/pokemon-grid";
-import { PokemonCard } from "@/features/pokedex/components/pokemon-card";
+import { VirtualizedPokemonGrid } from "@/features/pokedex/components/virtualized-pokemon-grid";
 import { InfiniteLoader } from "@/features/pokedex/components/infinite-loader";
 import { PokemonSkeletonGrid } from "@/features/pokedex/components/pokemon-skeleton";
 import { EmptyState } from "@/components/common/empty-state";
@@ -46,10 +45,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { ImportTeamDialog } from "@/features/team-import-export/components/ImportTeamDialog";
-import { ExportTeamDialog } from "@/features/team-import-export/components/ExportTeamDialog";
-
-// Lazy-load the Analysis Dashboard
+// Lazy-load heavy components
 const TeamAnalysisDashboard = dynamic(
   () => import("@/features/team-analysis/components/TeamAnalysisDashboard").then(mod => mod.TeamAnalysisDashboard),
   {
@@ -60,6 +56,16 @@ const TeamAnalysisDashboard = dynamic(
       </div>
     )
   }
+);
+
+const ImportTeamDialog = dynamic(
+  () => import("@/features/team-import-export/components/ImportTeamDialog").then(mod => mod.ImportTeamDialog),
+  { ssr: false }
+);
+
+const ExportTeamDialog = dynamic(
+  () => import("@/features/team-import-export/components/ExportTeamDialog").then(mod => mod.ExportTeamDialog),
+  { ssr: false }
 );
 
 function ExplorerContent() {
@@ -107,16 +113,12 @@ function ExplorerContent() {
         />
       ) : (
         <>
-          <PokemonGrid density="compact">
-            {allPokemon.map((pokemon, index) => (
-              <PokemonCard
-                key={`${pokemon.id}-${index}`}
-                pokemon={pokemon}
-                density="compact"
-                mode="team-builder"
-              />
-            ))}
-          </PokemonGrid>
+          <VirtualizedPokemonGrid
+            pokemon={allPokemon}
+            density="compact"
+            mode="team-builder"
+            className="h-[500px]"
+          />
           <InfiniteLoader
             onLoadMore={fetchNextPage}
             hasNextPage={!!hasNextPage}

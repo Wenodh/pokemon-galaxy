@@ -8,8 +8,11 @@ import {
   PokemonBoolExp,
 } from "../types";
 import { normalizePokemonName } from "@/features/team-import-export/utils/normalization";
+import { MemoryCache, CACHE_CONFIG } from "@/lib/cache/memory-cache";
 
 export class PokedexRepository {
+  private static cache = MemoryCache.getInstance();
+
   private static mapPokemonToListItem(pokemon: Pokemon): PokemonListItem {
     // Extract official artwork from the JSON sprites if available
     let image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`;
@@ -49,6 +52,12 @@ export class PokedexRepository {
     filters: PokedexFilters = {}
   ): Promise<PokemonListItem[]> {
     const { search } = filters;
+
+    // Try cache for search results
+    const cacheKey = `list-${limit}-${offset}-${search || "all"}`;
+    const cached = this.cache.get<PokemonListItem[]>(cacheKey);
+    if (cached) return cached;
+
     let where: PokemonBoolExp = {};
 
     if (search) {
@@ -70,7 +79,12 @@ export class PokedexRepository {
         }
       );
 
-      return data?.pokemon_v2_pokemon?.map((p) => this.mapPokemonToListItem(p)) || [];
+      const result = data?.pokemon_v2_pokemon?.map((p) => this.mapPokemonToListItem(p)) || [];
+
+      // Store in cache
+      this.cache.set(cacheKey, result, CACHE_CONFIG.SEARCH_RESULTS);
+
+      return result;
     } catch (error) {
       console.error("PokedexRepository.getPokemonList error:", error);
       return [];
@@ -83,13 +97,19 @@ export class PokedexRepository {
   static async getPokemonByIds(ids: number[]): Promise<PokemonListItem[]> {
     if (!ids || ids.length === 0) return [];
 
+    const cacheKey = `ids-${ids.sort().join(",")}`;
+    const cached = this.cache.get<PokemonListItem[]>(cacheKey);
+    if (cached) return cached;
+
     try {
       const data = await graphqlClient.request<PokemonListResponse>(
         GET_POKEMON_BY_IDS,
         { ids }
       );
 
-      return data?.pokemon_v2_pokemon?.map((p) => this.mapPokemonToListItem(p)) || [];
+      const result = data?.pokemon_v2_pokemon?.map((p) => this.mapPokemonToListItem(p)) || [];
+      this.cache.set(cacheKey, result, CACHE_CONFIG.POKEMON_METADATA);
+      return result;
     } catch (error) {
       console.error("PokedexRepository.getPokemonByIds error:", error);
       throw error;
@@ -103,6 +123,9 @@ export class PokedexRepository {
     if (!name) return null;
 
     const normalizedName = normalizePokemonName(name);
+    const cacheKey = `name-${normalizedName}`;
+    const cached = this.cache.get<PokemonListItem>(cacheKey);
+    if (cached) return cached;
 
     try {
       const data = await graphqlClient.request<PokemonListResponse>(
@@ -111,7 +134,11 @@ export class PokedexRepository {
       );
 
       const pokemon = data?.pokemon_v2_pokemon?.[0];
-      return pokemon ? this.mapPokemonToListItem(pokemon) : null;
+      const result = pokemon ? this.mapPokemonToListItem(pokemon) : null;
+      if (result) {
+        this.cache.set(cacheKey, result, CACHE_CONFIG.POKEMON_METADATA);
+      }
+      return result;
     } catch (error) {
       console.error(`PokedexRepository.getPokemonByName error for "${normalizedName}":`, error);
       return null;

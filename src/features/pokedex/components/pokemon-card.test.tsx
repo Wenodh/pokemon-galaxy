@@ -22,6 +22,7 @@ vi.mock("framer-motion", () => ({
   motion: {
     div: ({ children, whileHover, ...props }: any) => <div {...props}>{children}</div>,
   },
+  useReducedMotion: () => false,
 }));
 
 // Mock hooks
