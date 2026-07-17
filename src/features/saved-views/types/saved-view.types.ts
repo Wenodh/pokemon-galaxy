@@ -52,6 +52,11 @@ export interface SavedViewStoreState {
    * The ID of the currently applied view, if any
    */
   activeViewId: string | null;
+
+  /**
+   * Last sync-compatible update timestamp
+   */
+  updatedAt: number;
 }
 
 export interface SavedViewActions {

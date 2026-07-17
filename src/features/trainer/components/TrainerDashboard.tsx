@@ -1,6 +1,7 @@
 "use client";
 
 import { useTrainerStore } from "../store/trainer.store";
+import { useShallow } from "zustand/react/shallow";
 import { TrainerStatisticsService } from "../application/statistics-service";
 import { TrainerCard } from "./TrainerCard";
 import { StatisticsGrid } from "./StatisticsGrid";
@@ -13,7 +14,25 @@ import { Trophy, History, LayoutDashboard, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function TrainerDashboard() {
-  const { profile, timeline, viewedPokemonSet, exportedCount, importedCount, teamAnalysesCount, clearProfile } = useTrainerStore();
+  const {
+    profile,
+    timeline,
+    viewedPokemonSet,
+    exportedCount,
+    importedCount,
+    teamAnalysesCount,
+    clearProfile,
+  } = useTrainerStore(
+    useShallow((state) => ({
+      profile: state.profile,
+      timeline: state.timeline,
+      viewedPokemonSet: state.viewedPokemonSet,
+      exportedCount: state.exportedCount,
+      importedCount: state.importedCount,
+      teamAnalysesCount: state.teamAnalysesCount,
+      clearProfile: state.clearProfile,
+    }))
+  );
   const [activeTab, setActiveTab] = useState<"OVERVIEW" | "ACHIEVEMENTS" | "TIMELINE">("OVERVIEW");
   const [isHydrated, setIsHydrated] = useState(false);
 

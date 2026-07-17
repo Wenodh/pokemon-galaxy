@@ -4,7 +4,7 @@ import * as React from "react";
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -62,6 +62,7 @@ export function PokemonCard({
   onAddToOtherTeam,
 }: PokemonCardProps) {
   const isCompact = density === "compact";
+  const shouldReduceMotion = useReducedMotion();
   const { activeTeam, addPokemon } = useActiveTeam();
   const { teams } = useTeams();
 
@@ -137,9 +138,9 @@ export function PokemonCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={{ y: -5 }}
+      whileHover={shouldReduceMotion ? {} : { y: -5 }}
       transition={{ duration: 0.2 }}
       className="group relative"
     >

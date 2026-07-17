@@ -21,6 +21,7 @@ export interface CollectionsState {
   collections: Record<string, Collection>;
   collectionOrder: string[]; // Ordered list of collection IDs
   version: number;
+  updatedAt: number;
 }
 
 export interface CollectionsActions {
@@ -76,6 +77,7 @@ export interface LivingDexState {
   currentStreak?: number;
   longestStreak?: number;
   version: number;
+  updatedAt: number;
 }
 
 export interface LivingDexActions {

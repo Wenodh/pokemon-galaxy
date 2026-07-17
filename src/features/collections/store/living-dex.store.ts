@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, PersistOptions } from "zustand/middleware";
 import { LivingDexStore, LivingDexEntry } from "../types";
 import { LIVING_DEX_STORAGE_KEY, LIVING_DEX_STORE_VERSION } from "../constants";
+import { useSyncQueueStore } from "../../cloud-sync/store/sync-queue.store";
 
 const livingDexPersistOptions: PersistOptions<LivingDexStore, any> = {
   name: LIVING_DEX_STORAGE_KEY,
@@ -28,6 +29,7 @@ export const useLivingDexStore = create<LivingDexStore>()(
       currentStreak: undefined, // future-ready placeholder
       longestStreak: undefined, // future-ready placeholder
       version: LIVING_DEX_STORE_VERSION,
+      updatedAt: Date.now(),
 
       // Actions
       markSeen: (pokemonId, seen = true, name) => {
@@ -55,10 +57,12 @@ export const useLivingDexStore = create<LivingDexStore>()(
               ...state.entries,
               [pokemonId]: updatedEntry,
             },
+            updatedAt: Date.now(),
           };
         });
 
         if (isNewSeen) {
+          useSyncQueueStore.getState().addOperation("living-dex", "PUSH");
           import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
             TrainerEventService.emit({
               type: "POKEMON_SEEN",
@@ -94,10 +98,12 @@ export const useLivingDexStore = create<LivingDexStore>()(
               ...state.entries,
               [pokemonId]: updatedEntry,
             },
+            updatedAt: Date.now(),
           };
         });
 
         if (isNewCaught) {
+          useSyncQueueStore.getState().addOperation("living-dex", "PUSH");
           import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
             TrainerEventService.emit({
               type: "POKEMON_CAUGHT",
@@ -133,7 +139,10 @@ export const useLivingDexStore = create<LivingDexStore>()(
             }
           });
 
-          return { entries: updatedEntries };
+          return {
+            entries: updatedEntries,
+            updatedAt: Date.now(),
+          };
         });
 
         if (newlySeenIds.length > 0) {
@@ -190,7 +199,13 @@ export const useLivingDexStore = create<LivingDexStore>()(
         }
       },
 
-      clearLivingDex: () => set({ entries: {}, currentStreak: undefined, longestStreak: undefined }),
+      clearLivingDex: () =>
+        set({
+          entries: {},
+          currentStreak: undefined,
+          longestStreak: undefined,
+          updatedAt: Date.now(),
+        }),
     }),
     livingDexPersistOptions
   )

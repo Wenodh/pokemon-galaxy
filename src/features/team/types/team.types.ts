@@ -63,6 +63,7 @@ export interface TeamState {
   teamOrder: string[];
   activeTeamId: string | null;
   version: number;
+  updatedAt: number;
 }
 
 export interface TeamActions {

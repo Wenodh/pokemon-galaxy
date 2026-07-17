@@ -8,6 +8,7 @@ import {
   generateUniqueCopyName
 } from "../utils/team.validation";
 import { TEAM_STORE_VERSION } from "../constants/team.constants";
+import { useSyncQueueStore } from "../../cloud-sync/store/sync-queue.store";
 
 export const useTeamStore = create<TeamStore>()(
   persist(
@@ -17,6 +18,7 @@ export const useTeamStore = create<TeamStore>()(
       teamOrder: [],
       activeTeamId: null,
       version: TEAM_STORE_VERSION,
+      updatedAt: Date.now(),
 
       // Actions
       createTeam: (name, isImport = false) => {
@@ -36,7 +38,10 @@ export const useTeamStore = create<TeamStore>()(
           teams: { ...state.teams, [newTeam.id]: newTeam },
           teamOrder: [...state.teamOrder, newTeam.id],
           activeTeamId: state.activeTeamId ?? newTeam.id,
+          updatedAt: Date.now(),
         }));
+
+        useSyncQueueStore.getState().addOperation("teams", "PUSH");
 
         import("../../trainer/application/event-service").then(({ TrainerEventService }) => {
           TrainerEventService.emit({
@@ -65,6 +70,7 @@ export const useTeamStore = create<TeamStore>()(
             teams: remainingTeams,
             teamOrder: newTeamOrder,
             activeTeamId: newActiveTeamId,
+            updatedAt: Date.now(),
           };
         });
       },
@@ -85,6 +91,7 @@ export const useTeamStore = create<TeamStore>()(
               updatedAt: Date.now()
             },
           },
+          updatedAt: Date.now(),
         }));
 
         return { ok: true, value: undefined };

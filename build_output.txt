@@ -1,0 +1,37 @@
+▲ Next.js 16.2.9 (webpack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 10.6s
+  Running TypeScript ...
+  Finished TypeScript in 12.5s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/16) ...
+  Generating static pages using 3 workers (4/16)
+  Generating static pages using 3 workers (8/16)
+  Generating static pages using 3 workers (12/16)
+✓ Generating static pages using 3 workers (16/16) in 668ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/auth/[...nextauth]
+├ ○ /auth/signin
+├ ○ /battle
+├ ○ /collection
+├ ○ /collections
+├ ƒ /collections/[id]
+├ ○ /favorites
+├ ○ /living-dex
+├ ○ /pokedex
+├ ƒ /pokemon/[name]
+├ ○ /quiz
+├ ○ /recent
+├ ○ /settings
+├ ○ /team-builder
+└ ○ /trainer
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand

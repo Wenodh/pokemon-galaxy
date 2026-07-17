@@ -6,6 +6,7 @@ import { TRAINER_STORAGE_KEY, TRAINER_STORE_VERSION, MILESTONES_LIST } from "../
 import { ACHIEVEMENTS_REGISTRY } from "../constants/achievements";
 import { TrainerEventService } from "../application/event-service";
 import { TrainerStatisticsService } from "../application/statistics-service";
+import { useSyncQueueStore } from "../../cloud-sync/store/sync-queue.store";
 
 interface TrainerState {
   // Core Profile Info
@@ -143,6 +144,7 @@ export const useTrainerStore = create<TrainerState>()(
               updatedAt: now,
             },
           }));
+          useSyncQueueStore.getState().addOperation("trainer", "PUSH");
         }
       };
 
@@ -212,7 +214,10 @@ export const useTrainerStore = create<TrainerState>()(
             break;
 
           case "TEAM_ANALYZED":
-            set((prev) => ({ teamAnalysesCount: prev.teamAnalysesCount + 1 }));
+            set((prev) => ({
+              teamAnalysesCount: prev.teamAnalysesCount + 1,
+              profile: { ...prev.profile, updatedAt: Date.now() },
+            }));
             state.addTimelineEvent(
               "TEAM_ANALYZED",
               `Analyzed "${event.name}"`,
@@ -245,18 +250,27 @@ export const useTrainerStore = create<TrainerState>()(
             const viewedSet = [...state.viewedPokemonSet];
             if (!viewedSet.includes(event.id)) {
               viewedSet.push(event.id);
-              set({ viewedPokemonSet: viewedSet });
+              set((prev) => ({
+                viewedPokemonSet: viewedSet,
+                profile: { ...prev.profile, updatedAt: Date.now() },
+              }));
               evaluateProgress("viewedPokemon");
             }
             break;
 
           case "COLLECTION_EXPORTED":
-            set((prev) => ({ exportedCount: prev.exportedCount + 1 }));
+            set((prev) => ({
+              exportedCount: prev.exportedCount + 1,
+              profile: { ...prev.profile, updatedAt: Date.now() },
+            }));
             evaluateProgress("exportedCollections");
             break;
 
           case "COLLECTION_IMPORTED":
-            set((prev) => ({ importedCount: prev.importedCount + 1 }));
+            set((prev) => ({
+              importedCount: prev.importedCount + 1,
+              profile: { ...prev.profile, updatedAt: Date.now() },
+            }));
             evaluateProgress("importedCollections");
             break;
         }
@@ -280,21 +294,25 @@ export const useTrainerStore = create<TrainerState>()(
               updatedAt: Date.now(),
             },
           }));
+          useSyncQueueStore.getState().addOperation("trainer", "PUSH");
         },
 
         addTimelineEvent: (type, title, description, metadata) => {
+          const now = Date.now();
           const newEvent: TimelineEvent = {
             id: crypto.randomUUID(),
             type,
             title,
             description,
-            timestamp: Date.now(),
+            timestamp: now,
             metadata,
           };
 
           set((state) => ({
             timeline: [newEvent, ...state.timeline].slice(0, 200), // Limit timeline to 200 items for scaling
+            profile: { ...state.profile, updatedAt: now },
           }));
+          useSyncQueueStore.getState().addOperation("trainer", "PUSH");
         },
 
         evaluateProgress: (metric) => {
