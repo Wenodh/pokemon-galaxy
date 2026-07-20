@@ -65,10 +65,12 @@ export function Header() {
             <ThemeToggle />
           </div>
           <button
-            className="inline-flex items-center justify-center rounded-md p-2.5 text-muted-foreground md:hidden"
+            className="inline-flex items-center justify-center rounded-md p-2.5 text-muted-foreground md:hidden focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
-            <span className="sr-only">Open main menu</span>
+            <span className="sr-only">{mobileMenuOpen ? "Close main menu" : "Open main menu"}</span>
             {mobileMenuOpen ? (
               <X className="h-6 w-6" aria-hidden="true" />
             ) : (
@@ -80,14 +82,14 @@ export function Header() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="border-b border-border md:hidden">
+        <nav id="mobile-menu" aria-label="Mobile Navigation" className="border-b border-border md:hidden">
           <div className="space-y-1 px-4 pb-3 pt-2">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium",
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-base font-medium focus:outline-none focus:ring-2 focus:ring-ring",
                   pathname === item.href
                     ? "bg-accent text-accent-foreground"
                     : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
@@ -105,7 +107,7 @@ export function Header() {
               <ThemeToggle />
             </div>
           </div>
-        </div>
+        </nav>
       )}
     </header>
   );

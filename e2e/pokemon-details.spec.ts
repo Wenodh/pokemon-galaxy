@@ -3,12 +3,14 @@ import { test, expect } from "@playwright/test";
 test.describe("Pokémon Details Page", () => {
   test("should navigate from explorer to details", async ({ page }) => {
     await page.goto("/");
-    await page.waitForSelector("a[href^='/pokemon/']");
+    await page.waitForSelector("article");
+    await page.waitForTimeout(1000); // Wait for client hydration
 
-    const pokemonCard = page.locator("a[href^='/pokemon/']").first();
-    const pokemonName = await pokemonCard.locator("h3").innerText();
+    const card = page.locator("article").first();
+    const pokemonName = await card.locator("h3").innerText();
+    const link = card.locator("a[href^='/pokemon/']");
 
-    await pokemonCard.click();
+    await link.click({ force: true });
 
     await expect(page).toHaveURL(new RegExp(`/pokemon/${pokemonName.toLowerCase()}`));
     await expect(page.locator("h1")).toContainText(pokemonName, { ignoreCase: true });
@@ -60,7 +62,7 @@ test.describe("Pokémon Details Page", () => {
   test("should support move filtering", async ({ page }) => {
     await page.goto("/pokemon/pikachu", { waitUntil: "networkidle" });
 
-    const searchInput = page.getByPlaceholder("Search moves...");
+    const searchInput = page.getByRole('textbox', { name: "Search moves" });
     await searchInput.fill("thunderbolt");
 
     // Check if thunderbolt is visible

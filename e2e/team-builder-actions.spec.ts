@@ -10,32 +10,31 @@ test.describe('Team Builder Actions', () => {
 
   test('full team building workflow', async ({ page }) => {
     // 1. Create a team
-    await page.getByRole('button', { name: /create team/i }).first().click();
-    await page.getByPlaceholder(/enter team name/i).fill('Elite Four');
-    await page.getByRole('button', { name: /create team/i }).nth(1).click();
+    await page.getByRole('button', { name: /Create New Team/i }).first().click();
+    await page.getByLabel('Team Name').fill('Elite Four');
+    await page.getByRole('button', { name: 'Create Team', exact: true }).click();
 
-    await expect(page.getByText('Elite Four')).toBeVisible();
+    await expect(page.getByText('Elite Four').first()).toBeVisible();
     await expect(page.getByText('0 / 6 Pokémon')).toBeVisible();
 
     // 2. Add Pokémon from Explorer
     // Add Bulbasaur
-    const firstAddBtn = page.getByRole('button', { name: /^add$/i }).first();
+    const firstAddBtn = page.getByLabel("Add bulbasaur to active team");
     await firstAddBtn.click();
     await expect(page.getByText('Added Bulbasaur to Elite Four.')).toBeVisible();
     await expect(page.getByText('1 / 6 Pokémon')).toBeVisible();
 
     // Add Ivysaur
-    const secondAddBtn = page.getByRole('button', { name: /^add$/i }).nth(1);
+    const secondAddBtn = page.getByLabel("Add ivysaur to active team");
     await secondAddBtn.click();
     await expect(page.getByText('Added Ivysaur to Elite Four.')).toBeVisible();
 
     // 3. Duplicate Prevention
-    await firstAddBtn.click();
-    await expect(page.getByText(/already in team/i)).toBeVisible();
+    await expect(page.getByLabel("bulbasaur already in team")).toBeDisabled();
 
     // 4. Remove Pokémon
     await page.getByRole('button', { name: /remove bulbasaur/i }).click();
-    await expect(page.getByText('Removed Bulbasaur from team.')).toBeVisible();
+    await expect(page.getByText('Removed bulbasaur from team.')).toBeVisible();
     await expect(page.getByText('1 / 6 Pokémon')).toBeVisible();
 
     // 5. Navigation & Multiple Teams
@@ -43,9 +42,11 @@ test.describe('Team Builder Actions', () => {
 
     // Create second team
     await page.goto('/team-builder');
-    await page.getByRole('button', { name: /create new team/i }).click();
-    await page.getByPlaceholder(/enter team name/i).fill('Legendaries');
-    await page.getByRole('button', { name: /create team/i }).nth(1).click();
+    // Since "Elite Four" is active, we click the team selector dropdown first
+    await page.getByRole('button', { name: 'Elite Four' }).click();
+    await page.getByRole('menuitem', { name: /create new team/i }).click();
+    await page.getByLabel('Team Name').fill('Legendaries');
+    await page.getByRole('button', { name: 'Create Team', exact: true }).click();
 
     await page.goto('/pokedex');
     // Open menu on first card (Bulbasaur)
@@ -56,8 +57,8 @@ test.describe('Team Builder Actions', () => {
 
     // Should see dialog with both teams
     await expect(page.getByRole('heading', { name: /add Bulbasaur to team/i })).toBeVisible();
-    await expect(page.getByText('Elite Four')).toBeVisible();
-    await expect(page.getByText('Legendaries')).toBeVisible();
+    await expect(page.getByText('Elite Four').first()).toBeVisible();
+    await expect(page.getByText('Legendaries').first()).toBeVisible();
 
     // Add to Legendaries
     await page.getByRole('button', { name: /legendaries/i }).click();
@@ -66,9 +67,7 @@ test.describe('Team Builder Actions', () => {
     // 6. Persistence
     await page.reload();
     await page.goto('/team-builder');
-    // Ensure Legendaries is active (it was the last one added to/created)
-    // Actually, setActive might need to be verified.
-    await expect(page.getByText('Legendaries')).toBeVisible();
+    await expect(page.getByText('Legendaries').first()).toBeVisible();
     await expect(page.getByText('1 / 6 Pokémon')).toBeVisible();
   });
 });

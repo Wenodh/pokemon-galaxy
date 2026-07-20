@@ -24,6 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { typeColors } from "@/features/pokemon/utils/type-colors";
 
 interface PokemonCardProps {
   pokemon: PokemonListItem;
@@ -32,27 +33,6 @@ interface PokemonCardProps {
   mode?: "pokedex" | "team-builder";
   onAddToOtherTeam?: (pokemon: PokemonListItem) => void;
 }
-
-const typeColors: Record<string, string> = {
-  normal: "bg-zinc-400 dark:bg-zinc-500",
-  fire: "bg-orange-500",
-  water: "bg-blue-500",
-  grass: "bg-emerald-500",
-  electric: "bg-yellow-400 text-black",
-  ice: "bg-cyan-300 text-black",
-  fighting: "bg-red-600",
-  poison: "bg-purple-500",
-  ground: "bg-amber-600",
-  flying: "bg-indigo-400",
-  psychic: "bg-pink-500",
-  bug: "bg-lime-500",
-  rock: "bg-stone-500",
-  ghost: "bg-violet-700",
-  dragon: "bg-indigo-600",
-  dark: "bg-zinc-800",
-  steel: "bg-slate-400",
-  fairy: "bg-pink-300 text-black",
-};
 
 export function PokemonCard({
   pokemon,
@@ -154,12 +134,12 @@ export function PokemonCard({
         {/* Navigation Link Overlay */}
         <Link
           href={`/pokemon/${pokemon.name}`}
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-10"
           aria-label={`View details for ${pokemon.name}`}
         />
 
         {/* Actions Container */}
-        <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5">
+        <div className="absolute right-2 top-2 z-20 flex flex-col gap-1.5">
           <FavoriteButton
             pokemonId={pokemon.id}
             pokemonName={pokemon.name}
@@ -214,7 +194,7 @@ export function PokemonCard({
             <div className="text-[10px] font-mono font-bold text-muted-foreground/60 tracking-tighter">
               #{pokemon.id.toString().padStart(4, "0")}
             </div>
-            <div className="flex items-center gap-2 relative z-10">
+            <div className="flex items-center gap-2 relative z-20">
               {mode === "team-builder" && (
                 <Button
                   size="sm"
@@ -258,8 +238,8 @@ export function PokemonCard({
                     key={type}
                     variant="secondary"
                     className={cn(
-                      "rounded-md border-none px-2.5 py-0.5 text-[10px] font-black uppercase tracking-tighter text-white shadow-sm",
-                      typeColors[type.toLowerCase()] || "bg-slate-500"
+                      "rounded-md border-none px-2.5 py-0.5 text-[10px] font-black uppercase tracking-tighter shadow-sm",
+                      typeColors[type.toLowerCase()] || "bg-slate-500 text-white"
                     )}
                   >
                     {type}

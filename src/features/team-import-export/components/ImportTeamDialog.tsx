@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { TeamImporter } from "../domain/importer";
 import { ImportError, ImportValidationResult } from "../types/import-export.types";
 import { useTeams } from "@/features/team/hooks/useTeams";
@@ -32,7 +33,7 @@ export function ImportTeamDialog({ open, onOpenChange }: ImportTeamDialogProps) 
   const [errors, setErrors] = useState<ImportError[]>([]);
   const [previewResult, setPreviewResult] = useState<ImportValidationResult | null>(null);
   const { createTeam, getAllTeams } = useTeams();
-  const { addPokemon } = useActiveTeam();
+  const { addPokemon, setActiveTeam } = useActiveTeam();
 
   const handlePaste = async () => {
     const text = await pasteFromClipboard();
@@ -102,6 +103,8 @@ export function ImportTeamDialog({ open, onOpenChange }: ImportTeamDialogProps) 
             return addPokemon(teamId, pokemonId, comp);
         });
 
+        setActiveTeam(teamId);
+
         const failures = addResults.filter(r => !r.ok);
         if (failures.length > 0) {
             toast.error(`Imported team with some errors: ${failures.map(f => f.error).join(", ")}`);
@@ -142,7 +145,9 @@ export function ImportTeamDialog({ open, onOpenChange }: ImportTeamDialogProps) 
           {!previewResult ? (
             <div className="space-y-4">
                 <div className="relative">
+                    <Label htmlFor="import-team-data" className="sr-only">Paste team data</Label>
                     <Textarea
+                    id="import-team-data"
                     placeholder="Paste team data here..."
                     className="min-h-[300px] font-mono text-xs resize-none"
                     value={inputText}
@@ -155,8 +160,9 @@ export function ImportTeamDialog({ open, onOpenChange }: ImportTeamDialogProps) 
                     className="absolute top-2 right-2 h-8 px-2"
                     onClick={handlePaste}
                     disabled={isLoading}
+                    aria-label="Paste team data from clipboard"
                     >
-                    <ClipboardPaste className="h-4 w-4 mr-1" />
+                    <ClipboardPaste className="h-4 w-4 mr-1" aria-hidden="true" />
                     Paste
                     </Button>
                 </div>

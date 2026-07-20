@@ -148,7 +148,7 @@ export const TeamsPage = () => {
     closeDialogs,
   } = useTeamDialogs();
 
-  const { activeTeam } = useActiveTeam();
+  const { activeTeam, setActiveTeam } = useActiveTeam();
   const { team: fullTeam, isLoading: isTeamLoading } = useTeamPokemon();
   const { duplicateTeam } = useTeams();
 
@@ -210,7 +210,7 @@ export const TeamsPage = () => {
                             </Button>
                             <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" aria-label="Settings" title="Settings">
                                 <Settings2 className="h-3.5 w-3.5" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -331,6 +331,9 @@ export const TeamsPage = () => {
         <CreateTeamDialog
           open={activeDialog === "create"}
           onOpenChange={closeDialogs}
+          onSuccess={(teamId) => {
+            setActiveTeam(teamId);
+          }}
         />
 
         <RenameTeamDialog
