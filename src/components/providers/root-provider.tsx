@@ -7,6 +7,7 @@ import { AuthProvider } from "@/features/cloud-sync/components/auth-provider";
 import { SyncQueueProcessor } from "@/features/cloud-sync/components/sync-queue-processor";
 import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { ErrorMessage } from "@/components/common/error-message";
+import { MotionConfig } from "framer-motion";
 
 interface RootProviderProps {
   children: ReactNode;
@@ -38,8 +39,10 @@ export function RootProvider({ children }: RootProviderProps) {
           disableTransitionOnChange
         >
           <QueryProvider>
-            {children}
-            <SyncQueueProcessor />
+            <MotionConfig reducedMotion="user">
+              {children}
+              <SyncQueueProcessor />
+            </MotionConfig>
           </QueryProvider>
         </ThemeProvider>
       </AuthProvider>

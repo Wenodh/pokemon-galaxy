@@ -7,33 +7,13 @@ import { Trash2, Plus } from "lucide-react";
 import { PokemonListItem } from "@/features/pokedex/types";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { typeColors } from "@/features/pokemon/utils/type-colors";
 
 interface TeamSlotProps {
   pokemon?: PokemonListItem;
   onRemove?: () => void;
   index: number;
 }
-
-const typeColors: Record<string, string> = {
-  normal: "bg-zinc-400 dark:bg-zinc-500",
-  fire: "bg-orange-500",
-  water: "bg-blue-500",
-  grass: "bg-emerald-500",
-  electric: "bg-yellow-400 text-black",
-  ice: "bg-cyan-300 text-black",
-  fighting: "bg-red-600",
-  poison: "bg-purple-500",
-  ground: "bg-amber-600",
-  flying: "bg-indigo-400",
-  psychic: "bg-pink-500",
-  bug: "bg-lime-500",
-  rock: "bg-stone-500",
-  ghost: "bg-violet-700",
-  dragon: "bg-indigo-600",
-  dark: "bg-zinc-800",
-  steel: "bg-slate-400",
-  fairy: "bg-pink-300 text-black",
-};
 
 export const TeamSlot = ({ pokemon, onRemove, index }: TeamSlotProps) => {
   return (
@@ -90,8 +70,8 @@ export const TeamSlot = ({ pokemon, onRemove, index }: TeamSlotProps) => {
                   key={type}
                   variant="secondary"
                   className={cn(
-                    "rounded-md border-none px-1.5 sm:px-2 py-0 text-[8px] sm:text-[9px] font-black uppercase tracking-tight text-white h-4 sm:h-4.5",
-                    typeColors[type.toLowerCase()] || "bg-slate-500"
+                    "rounded-md border-none px-1.5 sm:px-2 py-0 text-[8px] sm:text-[9px] font-black uppercase tracking-tight h-4 sm:h-4.5",
+                    typeColors[type.toLowerCase()] || "bg-slate-500 text-white"
                   )}
                 >
                   {type}

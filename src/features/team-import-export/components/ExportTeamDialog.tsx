@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { TeamExporter } from "../domain/exporter";
 import { Team } from "@/features/team/types/team.types";
 import { useTeamPokemon } from "@/features/team/hooks/useTeamPokemon";
@@ -104,7 +105,9 @@ export function ExportTeamDialog({ team, open, onOpenChange }: ExportTeamDialogP
           </div>
 
           <div className="relative">
+            <Label htmlFor="export-team-data" className="sr-only">Exported team data</Label>
             <Textarea
+              id="export-team-data"
               readOnly
               className="min-h-[250px] font-mono text-xs resize-none bg-muted/30 p-4"
               value={exportText}

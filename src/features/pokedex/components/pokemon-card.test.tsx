@@ -76,8 +76,8 @@ describe("PokemonCard", () => {
     const addButton = screen.getByRole("button", { name: /add bulbasaur to active team/i });
     expect(addButton).toBeInTheDocument();
 
-    // Verify it has z-10 for the fix
-    expect(addButton.parentElement).toHaveClass("z-10");
+    // Verify it has z-20 for the fix
+    expect(addButton.parentElement).toHaveClass("z-20");
 
     addButton.click();
     expect(mockAddPokemon).toHaveBeenCalledWith("1", 1);

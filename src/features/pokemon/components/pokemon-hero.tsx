@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Container } from "@/components/common/container";
 import { cn } from "@/lib/utils";
 import { FavoriteButton } from "@/features/favorites/components/FavoriteButton";
+import { typeColors } from "../utils/type-colors";
 interface PokemonHeroProps { name: string; id: number; image: string; types: string[]; genus: string; generation: string; height: number; weight: number; }
-const typeColors: Record<string, string> = { normal: "bg-zinc-400 dark:bg-zinc-500", fire: "bg-orange-500", water: "bg-blue-500", grass: "bg-emerald-500", electric: "bg-yellow-400 text-black", ice: "bg-cyan-300 text-black", fighting: "bg-red-600", poison: "bg-purple-500", ground: "bg-amber-600", flying: "bg-indigo-400", psychic: "bg-pink-500", bug: "bg-lime-500", rock: "bg-stone-500", ghost: "bg-violet-700", dragon: "bg-indigo-600", dark: "bg-zinc-800", steel: "bg-slate-400", fairy: "bg-pink-300 text-black", };
 export function PokemonHero({ name, id, image, types, genus, generation, height, weight, }: PokemonHeroProps) {
   return (
     <div className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-background to-background py-12 lg:py-20">
@@ -45,7 +45,7 @@ export function PokemonHero({ name, id, image, types, genus, generation, height,
             </div>
             <div className="mb-8 flex flex-wrap justify-center gap-2 sm:gap-3 lg:justify-start">
               {types.map((type) => (
-                <Badge key={type} className={cn("rounded-full px-4 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg sm:px-6 sm:py-1.5 sm:text-sm", typeColors[type.toLowerCase()] || "bg-slate-500")}>{type}</Badge>
+                <Badge key={type} className={cn("rounded-full px-4 py-1 text-[10px] font-black uppercase tracking-widest shadow-lg sm:px-6 sm:py-1.5 sm:text-sm", typeColors[type.toLowerCase()] || "bg-slate-500 text-white")}>{type}</Badge>
               ))}
               <Badge variant="outline" className="rounded-full px-4 py-1 text-[10px] font-bold uppercase tracking-widest sm:px-6 sm:py-1.5 sm:text-sm">{genus}</Badge>
             </div>
